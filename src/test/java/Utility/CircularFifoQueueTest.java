@@ -109,4 +109,15 @@ class CircularFifoQueueTest {
         for (int i = 0; i < 4; i++)
             Assertions.assertEquals(Integer.valueOf(i), queue.get(i));
     }
+
+    @Test
+    void set() {
+        Assertions.assertThrows(NoSuchElementException.class, () -> queue.get(-1));
+        Assertions.assertThrows(NoSuchElementException.class, () -> queue.get(4));
+
+        for (int i = 0; i < 4; i++) {
+            queue.set(i, 5);
+            Assertions.assertEquals(Integer.valueOf(5), queue.get(i));
+        }
+    }
 }

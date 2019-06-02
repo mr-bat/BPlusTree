@@ -273,6 +273,24 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
         return elements[idx];
     }
 
+    /**
+     * Sets the element at the specified position in this queue.
+     *
+     * @param index the position of the element in the queue
+     * @throws NoSuchElementException if the requested position is outside the range [0, size)
+     */
+    public void set(final int index, final E element) {
+        final int sz = size();
+        if (index < 0 || index >= sz) {
+            throw new NoSuchElementException(
+                    String.format("The specified index (%1$d) is outside the available range [0, %2$d)",
+                            Integer.valueOf(index), Integer.valueOf(sz)));
+        }
+
+        final int idx = (start + index) % maxElements;
+        elements[idx] = element;
+    }
+
     //-----------------------------------------------------------------------
 
     /**
@@ -444,7 +462,8 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
         }
 
         end = (start + index) % maxElements;
-        full = false;
+        if (start == end)
+            full = false;
     }
 
     //Used, should test
