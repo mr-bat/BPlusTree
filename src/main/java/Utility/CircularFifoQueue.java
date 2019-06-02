@@ -77,7 +77,7 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
     /**
      * Constructor that creates a queue with the default size of 32.
      */
-    protected CircularFifoQueue() {
+    public CircularFifoQueue() {
         this(32);
     }
 
@@ -88,7 +88,7 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
      * @throws IllegalArgumentException  if the size is &lt; 1
      */
     @SuppressWarnings("unchecked")
-    protected CircularFifoQueue(final int size) {
+    public CircularFifoQueue(final int size) {
         if (size <= 0) {
             throw new IllegalArgumentException("The size must be greater than 0");
         }
@@ -103,7 +103,7 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
      * @param coll  the collection to copy into the queue, may not be null
      * @throws NullPointerException if the collection is null
      */
-    protected CircularFifoQueue(final Collection<? extends E> coll) {
+    public CircularFifoQueue(final Collection<? extends E> coll) {
         this(coll.size());
         addAll(coll);
     }
