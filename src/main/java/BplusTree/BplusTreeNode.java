@@ -5,8 +5,8 @@ abstract class BplusTreeNode<Key extends Comparable, Value> {
     protected BplusTreeNode parent;
 
     public abstract boolean isEmpty();
-    protected abstract boolean overoccupied();
-    protected abstract boolean underoccupied();
+    protected abstract boolean fullyOccupied();
+    protected abstract boolean underOccupied();
     protected abstract void split();
     protected abstract void rebalance();
 

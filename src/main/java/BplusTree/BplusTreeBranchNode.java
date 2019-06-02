@@ -20,12 +20,12 @@ class BplusTreeBranchNode<Key extends Comparable, Value> extends BplusTreeNode<K
     }
 
     @Override
-    protected boolean overoccupied() {
+    protected boolean fullyOccupied() {
         return false;
     }
 
     @Override
-    protected boolean underoccupied() {
+    protected boolean underOccupied() {
         return false;
     }
 

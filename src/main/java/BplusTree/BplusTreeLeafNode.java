@@ -40,12 +40,12 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
     }
 
     @Override
-    protected boolean overoccupied() {
-        return false;
+    protected boolean fullyOccupied() {
+        return keys.isFull();
     }
 
     @Override
-    protected boolean underoccupied() {
+    protected boolean underOccupied() {
         return false;
     }
 
@@ -66,17 +66,15 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
 
         int idx = Utils.searchRightmostKey(keys, searchKey, keys.size());
 
-        if (idx >= 0) {
+        if (idx >= 0)
             throw new BTreeException("cannot add currently present key");
-        }
-        else {
-            idx = -(idx + 1);
-            keys.insert(searchKey, idx);
-            leaves.insert(value, idx);
 
-            if ( overoccupied() )
-                split();
-        }
+        idx = -(idx + 1);
+        keys.insert(searchKey, idx);
+        leaves.insert(value, idx);
+
+        if ( fullyOccupied() )
+            split();
     }
     public void remove(Key searchKey) throws BTreeException {
         if (searchKey == null) {
@@ -89,7 +87,7 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
             keys.remove(idx);
             leaves.remove(idx);
 
-            if( underoccupied() )
+            if( underOccupied() )
                 rebalance();
         }
     }
