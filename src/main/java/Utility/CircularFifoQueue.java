@@ -416,7 +416,8 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
         }
 
         index = (start + index) % maxElements;
-        if (--end < 0)
+        --end;
+        if (end < 0)
             end = maxElements - 1;
 
         E next = elements[increment(index)];
@@ -429,6 +430,8 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
 
             next = elements[increment(index)];
         }
+        if (start == end)
+            full = false;
     }
 
     //Used, should test
