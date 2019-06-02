@@ -1,6 +1,5 @@
 package BplusTree;
 
-import Utility.ArrayUtils;
 import Utility.CircularFifoQueue;
 import Utility.Utils;
 
@@ -9,10 +8,30 @@ import static Utility.Utils.searchRightmostKey;
 class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNode<Key, Value> {
     private CircularFifoQueue<Key> keys;
     private CircularFifoQueue<Value> leaves;
+    private BplusTreeLeafNode next, prev;
 
-    public BplusTreeLeafNode() {
-        keys = new CircularFifoQueue<>(CAPACITY);
-        leaves = new CircularFifoQueue<>(CAPACITY + 1);
+    public BplusTreeLeafNode(BplusTreeLeafNode next, BplusTreeLeafNode prev) {
+        this.next = next;
+        this.prev = prev;
+
+        this.keys = new CircularFifoQueue<>(CAPACITY);
+        this.leaves = new CircularFifoQueue<>(CAPACITY + 1);
+    }
+
+    public BplusTreeLeafNode getNext() {
+        return next;
+    }
+
+    public BplusTreeLeafNode getPrev() {
+        return prev;
+    }
+
+    public void setNext(BplusTreeLeafNode next) {
+        this.next = next;
+    }
+
+    public void setPrev(BplusTreeLeafNode prev) {
+        this.prev = prev;
     }
 
     @Override

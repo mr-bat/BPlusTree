@@ -1,7 +1,7 @@
 package BplusTree;
 
 public class BplusTree<Key extends Comparable<Key>, Value> {
-    private BplusTreeNode<Key, Value> _root = new BplusTreeLeafNode<Key, Value>();
+    private BplusTreeNode<Key, Value> _root = new BplusTreeLeafNode<Key, Value>(null, null);
 
     public void add(Key key, Value value) throws BTreeException {
         _root.add(key, value);

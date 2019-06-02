@@ -41,7 +41,7 @@ class BplusTreeBranchNode<Key extends Comparable, Value> extends BplusTreeNode<K
 
     @Override
     public void add(Key searchKey, Value value) throws BTreeException {
-                if (searchKey == null) {
+        if (searchKey == null) {
             throw new BTreeException("Can't search on null Value");
         }
         int idx = Utils.searchRightmostKey(keys, searchKey, keys.size());
