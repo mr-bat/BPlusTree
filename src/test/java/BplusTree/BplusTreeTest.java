@@ -6,7 +6,7 @@ import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BplusTreeTest {
-    private static final int MAXN = 20 * 1000;
+    private static final int MAXN = 20 * 1;
     private BplusTree<Integer, Integer> bplusTree;
 
 

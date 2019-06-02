@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.util.NoSuchElementException;
 
 class CircularFifoQueueTest {
-    CircularFifoQueue<Integer> queue;
+    private CircularFifoQueue<Integer> queue;
 
     @BeforeEach
     void setUp() {
@@ -119,5 +119,39 @@ class CircularFifoQueueTest {
             queue.set(i, 5);
             Assertions.assertEquals(Integer.valueOf(5), queue.get(i));
         }
+    }
+
+    @Test
+    void splitEvenSize() {
+        CircularFifoQueue<Integer> secondHalf = queue.split();
+
+        Assertions.assertEquals(2, queue.size());
+        for (int i = 0; i < 2; i++)
+            Assertions.assertEquals(Integer.valueOf(i), queue.get(i));
+
+        Assertions.assertEquals(2, secondHalf.size());
+        for (int i = 0; i < 2; i++)
+            Assertions.assertEquals(Integer.valueOf(i + 2), secondHalf.get(i));
+
+        Assertions.assertThrows(IllegalStateException.class, () -> queue.split());
+    }
+
+    @Test
+    void splitOddSize() {
+        queue = new CircularFifoQueue<>(5);
+        for (int i = 0; i < 5; i++)
+            queue.add(i);
+
+        CircularFifoQueue<Integer> secondHalf = queue.split();
+
+        Assertions.assertEquals(2, queue.size());
+        for (int i = 0; i < 2; i++)
+            Assertions.assertEquals(Integer.valueOf(i), queue.get(i));
+
+        Assertions.assertEquals(3, secondHalf.size());
+        for (int i = 0; i < 3; i++)
+            Assertions.assertEquals(Integer.valueOf(i + 2), secondHalf.get(i));
+
+        Assertions.assertThrows(IllegalStateException.class, () -> queue.split());
     }
 }

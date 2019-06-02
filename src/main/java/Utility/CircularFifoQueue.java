@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.util.AbstractCollection;
 import java.util.Arrays;
 import java.util.Collection;
@@ -106,6 +107,16 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
     public CircularFifoQueue(final Collection<? extends E> coll) {
         this(coll.size());
         addAll(coll);
+    }
+
+    public CircularFifoQueue(final E[] elements, final int size) {
+        if (elements.length < size)
+            throw new IllegalStateException("initial array is smaller than the specified end index");
+
+        this.elements = elements;
+        this.end = size;
+        this.maxElements = elements.length;
+        this.full = end == maxElements;
     }
 
     //-----------------------------------------------------------------------
@@ -501,6 +512,18 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
         if (end == start) {
             full = true;
         }
+    }
+
+    //Used, should test
+    public CircularFifoQueue<E> split() {
+        if (!isAtFullCapacity())
+            throw new IllegalStateException("CircularFifoQueue should be full");
+
+        E[] restElements = (E[]) Array.newInstance(elements.getClass().getComponentType(), maxElements);
+        System.arraycopy(elements, maxElements / 2, restElements, 0, (maxElements + 1) / 2);
+        removeFrom(maxElements / 2);
+
+        return new CircularFifoQueue(restElements, (maxElements+1)/2);
     }
 
     //-----------------------------------------------------------------------
