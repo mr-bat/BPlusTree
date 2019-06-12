@@ -229,7 +229,7 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
     /**
      * Clears this queue.
      */
-    @Override
+    @Override @Deprecated
     public void clear() {
         full = false;
         start = 0;
@@ -238,21 +238,21 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
     }
 
     /**
-     * Adds the given element to this queue. If the queue is full, the least recently added
-     * element is discarded so that a new element can be inserted.
+     * Adds the given element to this queue. If the queue is full an exception is thrown.
      *
      * @param element  the element to add
      * @return true, always
      * @throws NullPointerException  if the given element is null
+     * @throws IllegalStateException if the queue is full
      */
-    @Override
+    @Override @Deprecated
     public boolean add(final E element) {
         if (null == element) {
             throw new NullPointerException("Attempted to add null object to queue");
         }
 
         if (isAtFullCapacity()) {
-            remove();
+            throw new IllegalStateException("Can not add when queue is full");
         }
 
         elements[end++] = element;
@@ -315,12 +315,12 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
      * @return true, always
      * @throws NullPointerException  if the given element is null
      */
-    @Override
+    @Override @Deprecated
     public boolean offer(final E element) {
         return add(element);
     }
 
-    @Override
+    @Override @Deprecated
     public E poll() {
         if (isEmpty()) {
             return null;
@@ -328,7 +328,7 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
         return remove();
     }
 
-    @Override
+    @Override @Deprecated
     public E element() {
         if (isEmpty()) {
             throw new NoSuchElementException("queue is empty");
@@ -336,7 +336,7 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
         return peek();
     }
 
-    @Override
+    @Override @Deprecated
     public E peek() {
         if (isEmpty()) {
             return null;
@@ -344,7 +344,7 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
         return elements[start];
     }
 
-    @Override
+    @Override @Deprecated
     public E remove() {
         if (isEmpty()) {
             throw new NoSuchElementException("queue is empty");
@@ -363,9 +363,10 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
     }
 
     //-----------------------------------------------------------------------
-
+    //Used, should test
     public boolean pushBack(final E element) { return add(element); }
 
+    @Deprecated
     public boolean pushFront(final E element) {
         if (null == element) {
             throw new NullPointerException("Attempted to add null object to queue");
@@ -388,6 +389,7 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
         return true;
     }
 
+    @Deprecated
     public E peekBack() {
         if (isEmpty()) {
             return null;
@@ -422,6 +424,7 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
         return element;
     }
 
+    @Deprecated
     public E popBack() {
         if (isEmpty()) {
             throw new NoSuchElementException("queue is empty");

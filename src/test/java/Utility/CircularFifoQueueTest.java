@@ -15,7 +15,7 @@ class CircularFifoQueueTest {
         queue = new CircularFifoQueue<>(4);
 
         for (int i = 0; i < 4; i++)
-            queue.add(i);
+            queue.pushBack(i);
     }
 
     @AfterEach
@@ -176,7 +176,7 @@ class CircularFifoQueueTest {
     void splitOddSizeCircular() {
         queue = new CircularFifoQueue<>(5);
         for (int i = 0; i < 5; i++)
-            queue.add(i);
+            queue.pushBack(i);
         queue.popFront();
         queue.pushBack(5);
 
@@ -191,5 +191,32 @@ class CircularFifoQueueTest {
             Assertions.assertEquals(Integer.valueOf(i + 3), secondHalf.get(i));
 
         Assertions.assertThrows(IllegalStateException.class, () -> queue.split());
+    }
+
+    @Test
+    void isEmpty() {
+        Assertions.assertFalse(queue.isEmpty());
+        Assertions.assertTrue(new CircularFifoQueue().isEmpty());
+    }
+
+    @Test
+    void isAtFullCapacity() {
+        Assertions.assertTrue(queue.isAtFullCapacity());
+        Assertions.assertFalse(new CircularFifoQueue().isAtFullCapacity());
+    }
+
+    @Test
+    void maxSize() {
+        Assertions.assertEquals(4, queue.maxSize());
+    }
+
+    @Test
+    void pushBack() {
+        Assertions.assertThrows(IllegalStateException.class, () -> queue.pushBack(5));
+
+        queue.popFront();
+        queue.pushBack(4);
+        for (int i = 0; i < 4; i++)
+            Assertions.assertEquals(Integer.valueOf(i + 1), queue.get(i));
     }
 }
