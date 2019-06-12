@@ -31,6 +31,9 @@ import java.util.Queue;
 
 import org.apache.commons.collections4.BoundedCollection;
 
+import static java.lang.StrictMath.min;
+import static java.lang.StrictMath.max;
+
 /**
  * CircularFifoQueue is a first-in first-out queue with a fixed size that
  * replaces its oldest element if full.
@@ -520,7 +523,8 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
             throw new IllegalStateException("CircularFifoQueue should be full");
 
         E[] restElements = (E[]) Array.newInstance(elements.getClass().getComponentType(), maxElements);
-        System.arraycopy(elements, maxElements / 2, restElements, 0, (maxElements + 1) / 2);
+        System.arraycopy(elements, start + (maxElements / 2), restElements, 0, max((maxElements + 1) / 2 - start, 0));
+        System.arraycopy(elements, 0, restElements, max((maxElements + 1) / 2 - start, 0), min((maxElements + 1) / 2, start));
         removeFrom(maxElements / 2);
 
         return new CircularFifoQueue(restElements, (maxElements+1)/2);
