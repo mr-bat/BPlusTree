@@ -3,15 +3,23 @@ package BplusTree;
 import Utility.CircularFifoQueue;
 import Utility.Utils;
 
+import static Utility.Utils.searchLeftmostKey;
 import static Utility.Utils.searchRightmostKey;
 
 class BplusTreeBranchNode<Key extends Comparable, Value> extends BplusTreeNode<Key, Value>{
     private CircularFifoQueue<Key> keys;
     private CircularFifoQueue<BplusTreeNode<Key, Value>> children;
+    private Key LeftRangeKey;
 
-    public BplusTreeBranchNode() {
-        keys = new CircularFifoQueue<>(CAPACITY);
-        children = new CircularFifoQueue<>(CAPACITY + 1);
+    public BplusTreeBranchNode(BplusTreeBranchNode parent) {
+        this(new CircularFifoQueue<>(CAPACITY), new CircularFifoQueue<>(CAPACITY), parent);
+    }
+
+    public BplusTreeBranchNode(CircularFifoQueue<Key> keys, CircularFifoQueue<BplusTreeNode<Key, Value>> children, BplusTreeBranchNode parent) {
+        this.keys = keys;
+        this.children = children;
+        this.parent = parent;
+        this.LeftRangeKey = keys.peekFront();
     }
 
     @Override
@@ -21,61 +29,124 @@ class BplusTreeBranchNode<Key extends Comparable, Value> extends BplusTreeNode<K
 
     @Override
     protected boolean fullyOccupied() {
-        return false;
+        return keys.isAtFullCapacity();
     }
 
     @Override
     protected boolean underOccupied() {
-        return false;
+        return isEmpty();
     }
 
     @Override
-    protected void split() {
+    protected void split() throws BTreeException {
+        if (parent == null) {
+            parent = new BplusTreeBranchNode(null);
+            parent.addNode(this, peekKey());
+        }
 
+        CircularFifoQueue<Key> restOfKeys = keys.split();
+        CircularFifoQueue<BplusTreeNode<Key, Value>> restOfChildren = children.split();
+
+        BplusTreeBranchNode rest = new BplusTreeBranchNode(restOfKeys, restOfChildren, parent);
+        for (BplusTreeNode node :
+                restOfChildren) {
+            node.setParent(rest);
+        }
+
+        parent.addNode(rest, rest.peekKey());
     }
 
     @Override
-    protected void rebalance() {
+    protected void rebalance() throws BTreeException {
+        if (parent != null)
+            parent.removeNode(LeftRangeKey);
+    }
 
+    void addNode(BplusTreeNode child, Key key) throws BTreeException {
+        int idx = searchLeftmostKey(keys, key, keys.size());
+        if (idx >= 0)
+            throw new BTreeException("Can't add node when it exists");
+
+        idx = -(idx + 1);
+        keys.insert(key, idx);
+        children.insert(child, idx);
+
+        if (idx == 0)
+            LeftRangeKey = key;
+        if (fullyOccupied())
+            split();
+    }
+
+    void removeNode(Key key) throws BTreeException {
+        int idx = searchRightmostKey(keys, key, keys.size());
+        idx = idx < 0 ? -(idx + 1) : idx;
+
+        keys.remove(idx);
+        children.remove(idx);
+
+        if (underOccupied())
+            rebalance();
+    }
+
+    void updateKeyOfNode(Key newKey, Key currKey) throws BTreeException {
+        int idx = Utils.searchLeftmostKey(keys, currKey, keys.size());
+        if (idx < 0)
+            throw new BTreeException("Key does not exist to be updated");
+
+        keys.set(idx, newKey);
+
+        if (idx == 0) {
+            LeftRangeKey = newKey;
+
+            if (parent != null)
+                parent.updateKeyOfNode(newKey, currKey);
+        }
     }
 
     @Override
-    public void add(Key searchKey, Value value) throws BTreeException {
-        if (searchKey == null) {
+    public void add(Key key, Value value) throws BTreeException {
+        if (key == null) {
             throw new BTreeException("Can't search on null Value");
         }
-        int idx = Utils.searchRightmostKey(keys, searchKey, keys.size());
-        idx = idx < 0 ? -(idx + 1) : idx + 1;
-        children.get(idx).add(searchKey, value);
+        int idx = Utils.searchRightmostKey(keys, key, keys.size());
+
+        idx = idx < 0 ? -(idx + 1) : idx;
+        children.get(idx).add(key, value);
     }
 
     @Override
-    public void remove(Key searchKey) throws BTreeException {
-        if (searchKey == null) {
+    public void remove(Key key) throws BTreeException {
+        if (key == null) {
             throw new BTreeException("Can't search on null Value");
         }
-        int idx = searchRightmostKey(keys, searchKey, keys.size());
-        idx = idx < 0 ? -(idx + 1) : idx + 1;
-        children.get(idx).remove(searchKey);
+        int idx = searchRightmostKey(keys, key, keys.size());
+
+        idx = idx < 0 ? -(idx + 1) : idx;
+        children.get(idx).remove(key);
     }
 
     @Override
-    public void removeFrom(Key searchKey) throws BTreeException {
-        if (searchKey == null) {
+    public void removeFrom(Key thresholdKey) throws BTreeException {
+        if (thresholdKey == null) {
             throw new BTreeException("Can't search on null Value");
         }
-        int idx = searchRightmostKey(keys, searchKey, keys.size());
+        int idx = searchRightmostKey(keys, thresholdKey, keys.size());
+
         if ( idx < 0 ) {
-            keys.removeFrom(idx);
+            idx = -(idx + 1);
+            keys.removeFrom(idx + 1);
             children.removeFrom(idx + 1);
+            children.get(idx).removeFrom(thresholdKey);
         }
         else {
-            if (idx + 1 < keys.size()) {
-                keys.removeFrom(idx + 1);
-                children.removeFrom(idx + 1);
+            if (idx < keys.size()) {
+                keys.removeFrom(idx);
+                children.removeFrom(idx);
             }
-            children.get(idx).removeFrom(searchKey);
         }
+
+        if (underOccupied())
+            rebalance();
     }
 
     @Override
@@ -84,7 +155,8 @@ class BplusTreeBranchNode<Key extends Comparable, Value> extends BplusTreeNode<K
             throw new BTreeException("Can't search on null Value");
         }
         int idx = searchRightmostKey(keys, searchKey, keys.size());
-        idx = idx < 0 ? -(idx + 1) : idx + 1;
+
+        idx = idx < 0 ? -(idx + 1) : idx;
         return children.get(idx).find(searchKey);
     }
 
@@ -98,7 +170,8 @@ class BplusTreeBranchNode<Key extends Comparable, Value> extends BplusTreeNode<K
         return children.get(0).peekValue();
     }
 
-    public Value pop() {
+    @Override
+    public Value pop() throws BTreeException {
         return children.get(0).pop();
     }
 }
