@@ -197,7 +197,7 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
      *
      * @return always returns {@code false}
      */
-    @Override
+    @Override @Deprecated
     public boolean isFull() {
         return false;
     }
