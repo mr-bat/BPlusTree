@@ -219,4 +219,20 @@ class CircularFifoQueueTest {
         for (int i = 0; i < 4; i++)
             Assertions.assertEquals(Integer.valueOf(i + 1), queue.get(i));
     }
+
+    @Test
+    void peekFrontForcedFromBegining() {
+        for (int i = 0; i < 4; i++) {
+            Assertions.assertEquals(Integer.valueOf(i), queue.peekFrontForced());
+            queue.popFront();
+        }
+        Assertions.assertEquals(Integer.valueOf(0), queue.peekFrontForced());
+    }
+
+    @Test
+    void peekFrontForcedFromEnd() {
+        Assertions.assertEquals(Integer.valueOf(0), queue.peekFrontForced());
+        queue.removeFrom(0);
+        Assertions.assertEquals(Integer.valueOf(0), queue.peekFrontForced());
+    }
 }

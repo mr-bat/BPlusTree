@@ -17,22 +17,18 @@ package Utility;
  * limitations under the License.
  */
 
+import com.google.common.annotations.Beta;
+import org.apache.commons.collections4.BoundedCollection;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Array;
-import java.util.AbstractCollection;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Queue;
+import java.util.*;
 
-import org.apache.commons.collections4.BoundedCollection;
-
-import static java.lang.StrictMath.min;
 import static java.lang.StrictMath.max;
+import static java.lang.StrictMath.min;
 
 /**
  * CircularFifoQueue is a first-in first-out queue with a fixed size that
@@ -167,7 +163,7 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
      *
      * @return this queue's size
      */
-    @Override //Used, should test
+    @Override 
     public int size() {
         int size = 0;
 
@@ -363,7 +359,6 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
     }
 
     //-----------------------------------------------------------------------
-    //Used, should test
     public boolean pushBack(final E element) { return add(element); }
 
     @Deprecated
@@ -397,7 +392,6 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
         return elements[decrement(end)];
     }
 
-    //Used, should test
     public E peekFront() {
         if (isEmpty()) {
             return null;
@@ -405,7 +399,14 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
         return elements[start];
     }
 
-    //Used, should test
+    /**
+     * If queue is empty returns the element at the current start else peeks front 
+     */
+    @Beta
+    public E peekFrontForced() {
+        return elements[start];
+    }
+
     public E popFront() {
         if (isEmpty()) {
             throw new NoSuchElementException("queue is empty");
@@ -441,7 +442,6 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
         return element;
     }
 
-    //Used, should test
     public void remove(int index) {
         final int sz = size();
         if (index < 0 || index >= sz) {
@@ -469,7 +469,6 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
             full = false;
     }
 
-    //Used, should test
     public void removeFrom(int index) {
         final int sz = size();
         if (index < 0 || index >= sz) {
@@ -483,7 +482,6 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
             full = false;
     }
 
-    //Used, should test
     public void insert(E element, int index) {
         final int sz = size();
         if (index < 0 || index > sz) {
@@ -520,7 +518,6 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
         }
     }
 
-    //Used, should test
     public CircularFifoQueue<E> split() {
         if (!isAtFullCapacity())
             throw new IllegalStateException("CircularFifoQueue should be full");
