@@ -56,9 +56,9 @@ class BplusTreeTest {
                 Assertions.assertNull(bplusTree.find(j));
             }
             for (int j = 1; j <= backward; j++) {
-                int k = i + forward - backward;
-                Assertions.assertEquals(Integer.valueOf(2 * k), bplusTree.find(k));
+                int k = i + forward - j;
                 bplusTree.add(k, 2 * k);
+                Assertions.assertEquals(Integer.valueOf(2 * k), bplusTree.find(k));
             }
         }
     }
