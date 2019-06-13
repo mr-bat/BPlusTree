@@ -75,9 +75,9 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
 
         idx = -(idx + 1);
         if (idx == 0) {
-            LeftRangeKey = key;
             if (parent != null)
-                parent.updateKeyOfNode(key, keys.peekFront());
+                parent.updateKeyOfNode(key, LeftRangeKey);
+            LeftRangeKey = key;
         }
 
         keys.insert(key, idx);

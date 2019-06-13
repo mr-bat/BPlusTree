@@ -96,10 +96,10 @@ class BplusTreeBranchNode<Key extends Comparable, Value> extends BplusTreeNode<K
         keys.set(idx, newKey);
 
         if (idx == 0) {
-            LeftRangeKey = newKey;
-
             if (parent != null)
-                parent.updateKeyOfNode(newKey, currKey);
+                parent.updateKeyOfNode(newKey, LeftRangeKey);
+
+            LeftRangeKey = newKey;
         }
     }
 
@@ -144,9 +144,6 @@ class BplusTreeBranchNode<Key extends Comparable, Value> extends BplusTreeNode<K
                 children.removeFrom(idx);
             }
         }
-
-        if (underOccupied())
-            rebalance();
     }
 
     @Override

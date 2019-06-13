@@ -3,6 +3,8 @@ package BplusTree;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 
+import static java.lang.Math.min;
+
 class BplusTreeTest {
     private static final int MAXN = 30 * 1000;
     private BplusTree<Integer, Integer> bplusTree;
@@ -38,8 +40,28 @@ class BplusTreeTest {
 
     }
 
+    /**
+     * @implNote forward > backward should hold
+     */
     @org.junit.jupiter.api.Test
-    void shouldRemoveFrom() throws BTreeException {
+    void shouldAddRemoveAlternatively() throws BTreeException {
+        final int forward = 10, backward = 2;
+
+        for (int i = 0; i < MAXN; i += forward - backward) {
+            for (int j = i; j < min(i + forward, MAXN); j++) {
+                Assertions.assertEquals(Integer.valueOf(2 * j), bplusTree.find(j));
+                bplusTree.remove(j);
+                Assertions.assertNull(bplusTree.find(j));
+            }
+            for (int j = 0, k = i + forward - 1; j < backward; j++, k--) {
+                bplusTree.add(k, 2 * k);
+                Assertions.assertEquals(Integer.valueOf(2 * k), bplusTree.find(k));
+            }
+        }
+    }
+
+    @org.junit.jupiter.api.Test
+    void shouldRemoveFromMiddle() throws BTreeException {
         Assertions.assertThrows(BTreeException.class, () -> bplusTree.removeFrom(null));
 
         bplusTree.removeFrom(MAXN/2);
@@ -49,6 +71,20 @@ class BplusTreeTest {
             else
                 Assertions.assertNull(bplusTree.find(i));
         }
+    }
+
+    @org.junit.jupiter.api.Test
+    void shouldRemoveFromBeginning() throws BTreeException {
+        bplusTree.removeFrom(0);
+        for (int i = 0; i < MAXN; i++)
+            Assertions.assertNull(bplusTree.find(i));
+    }
+
+    @org.junit.jupiter.api.Test
+    void shouldRemoveFromBeforeBeginning() throws BTreeException {
+        bplusTree.removeFrom(-1);
+        for (int i = 0; i < MAXN; i++)
+            Assertions.assertNull(bplusTree.find(i));
     }
 
     @org.junit.jupiter.api.Test
