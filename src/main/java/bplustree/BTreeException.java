@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package BplusTree;
+package bplustree;
 
 public class BTreeException extends Exception {
     private static final long serialVersionUID = -1010101L;

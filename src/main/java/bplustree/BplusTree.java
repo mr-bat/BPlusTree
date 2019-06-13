@@ -1,4 +1,4 @@
-package BplusTree;
+package bplustree;
 
 public class BplusTree<Key extends Comparable<Key>, Value> {
     private BplusTreeNode<Key, Value> _root = new BplusTreeLeafNode<Key, Value>(null, null, null);

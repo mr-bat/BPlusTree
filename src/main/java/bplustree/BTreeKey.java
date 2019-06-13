@@ -1,4 +1,4 @@
-package BplusTree;
+package bplustree;
 
 public class BTreeKey<Value> {
     private Value key;

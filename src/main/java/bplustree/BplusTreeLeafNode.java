@@ -1,4 +1,4 @@
-package BplusTree;
+package bplustree;
 
 import Utility.CircularFifoQueue;
 

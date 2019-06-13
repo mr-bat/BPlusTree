@@ -1,4 +1,4 @@
-package BplusTree;
+package bplustree;
 
 abstract class BplusTreeNode<Key extends Comparable, Value> {
     protected static final int CAPACITY = 127;

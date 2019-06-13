@@ -1,4 +1,4 @@
-package BplusTree;
+package bplustree;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
