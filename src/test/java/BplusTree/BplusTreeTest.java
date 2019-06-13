@@ -40,6 +40,19 @@ class BplusTreeTest {
 
     }
 
+    @org.junit.jupiter.api.Test
+    void shouldRemoveRange() throws BTreeException {
+        for (int i = MAXN / 30; i < MAXN * 29 / 30; i += 2) {
+            Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.find(i));
+            bplusTree.remove(i);
+            Assertions.assertNull(bplusTree.find(i));
+        }
+        for (int i = 0; i < MAXN / 30; i++)
+            Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.find(i));
+        for (int i = MAXN * 29 / 30; i < MAXN; i++)
+            Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.find(i));
+    }
+
     /**
      * @implNote forward > backward should hold
      */
@@ -88,6 +101,13 @@ class BplusTreeTest {
         bplusTree.removeFrom(-1);
         for (int i = 0; i < MAXN; i++)
             Assertions.assertNull(bplusTree.find(i));
+    }
+
+    @org.junit.jupiter.api.Test
+    void shouldRemoveFromAfterBeginning() throws BTreeException {
+        bplusTree.removeFrom(MAXN);
+        for (int i = 0; i < MAXN; i++)
+            Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.find(i));
     }
 
     @org.junit.jupiter.api.Test

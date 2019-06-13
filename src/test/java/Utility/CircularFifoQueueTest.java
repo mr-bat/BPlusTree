@@ -71,13 +71,22 @@ class CircularFifoQueueTest {
 
     @Test
     void removeFrom() {
-        Assertions.assertThrows(NoSuchElementException.class, () -> queue.removeFrom(-1));
-        Assertions.assertThrows(NoSuchElementException.class, () -> queue.removeFrom(4));
-
         queue.removeFrom(2);
 
         Assertions.assertEquals(Integer.valueOf(0), queue.get(0));
         Assertions.assertEquals(Integer.valueOf(1), queue.get(1));
+    }
+
+    @Test
+    void removeFromBeforeBeginning() {
+        queue.removeFrom(-1);
+        Assertions.assertTrue(queue.isEmpty());
+    }
+
+    @Test
+    void removeFromAfterEnd() {
+        queue.removeFrom(4);
+        Assertions.assertEquals(4, queue.size());
     }
 
     @Test
