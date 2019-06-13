@@ -3,7 +3,16 @@ package Utility;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.NoSuchElementException;
+
 class UtilsSearchRightmostTest {
+
+    @Test
+    void shouldSearchInvalidRange() {
+        CircularFifoQueue<Integer> queue = new CircularFifoQueue<>(new Integer[]{1, 2, 3}, 3);
+        Assertions.assertEquals(-1, Utils.searchRightmostKey(queue, 3, 0));
+        Assertions.assertThrows(NoSuchElementException.class, () -> Utils.searchRightmostKey(queue, 5, 4));
+    }
 
     @Test
     void shouldSearchDistinctKey() {

@@ -4,7 +4,16 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.NoSuchElementException;
+
 class UtilsSearchLeftmostTest {
+
+    @Test
+    void shouldSearchInvalidRange() {
+        CircularFifoQueue<Integer> queue = new CircularFifoQueue<>(new Integer[]{1, 2, 3}, 3);
+        Assertions.assertEquals(-1, Utils.searchLeftmostKey(queue, 3, 0));
+        Assertions.assertThrows(NoSuchElementException.class, () -> Utils.searchLeftmostKey(queue, 5, 4));
+    }
 
     @Test
     void shouldSearchDistinctKey() {
