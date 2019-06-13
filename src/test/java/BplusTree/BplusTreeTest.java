@@ -45,7 +45,9 @@ class BplusTreeTest {
      */
     @org.junit.jupiter.api.Test
     void shouldAddRemoveAlternatively() throws BTreeException {
-        final int forward = 10, backward = 2;
+        final int forward = 10;
+        final int backward = 2;
+        assert forward > backward;
 
         for (int i = 0; i < MAXN; i += forward - backward) {
             for (int j = i; j < min(i + forward, MAXN); j++) {
@@ -53,9 +55,10 @@ class BplusTreeTest {
                 bplusTree.remove(j);
                 Assertions.assertNull(bplusTree.find(j));
             }
-            for (int j = 0, k = i + forward - 1; j < backward; j++, k--) {
-                bplusTree.add(k, 2 * k);
+            for (int j = 1; j <= backward; j++) {
+                int k = i + forward - backward;
                 Assertions.assertEquals(Integer.valueOf(2 * k), bplusTree.find(k));
+                bplusTree.add(k, 2 * k);
             }
         }
     }

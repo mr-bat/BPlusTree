@@ -89,7 +89,7 @@ class BplusTreeBranchNode<Key extends Comparable, Value> extends BplusTreeNode<K
     }
 
     void updateKeyOfNode(Key newKey, Key currKey) throws BTreeException {
-        int idx = Utils.searchLeftmostKey(keys, currKey, keys.size());
+        int idx = searchLeftmostKey(keys, currKey, keys.size());
         if (idx < 0)
             throw new BTreeException("Key does not exist to be updated");
 
@@ -108,7 +108,7 @@ class BplusTreeBranchNode<Key extends Comparable, Value> extends BplusTreeNode<K
         if (key == null) {
             throw new BTreeException("Can't search on null Value");
         }
-        int idx = Utils.searchRightmostKey(keys, key, keys.size());
+        int idx = searchRightmostKey(keys, key, keys.size());
 
         idx = idx < 0 ? -(idx + 1) : idx;
         children.get(idx).add(key, value);
