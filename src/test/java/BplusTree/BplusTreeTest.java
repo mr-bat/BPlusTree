@@ -1,9 +1,7 @@
 package BplusTree;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Assertions;
 
 class BplusTreeTest {
     private static final int MAXN = 20 * 1;
@@ -26,9 +24,9 @@ class BplusTreeTest {
     @org.junit.jupiter.api.Test
     void shouldRemove() throws BTreeException {
         for (int i = 0; i < MAXN; i += 2) {
-            Assert.assertEquals(Integer.valueOf(2 * i), bplusTree.find(i));
+            Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.find(i));
             bplusTree.remove(i);
-            Assert.assertNull(bplusTree.find(i));
+            Assertions.assertNull(bplusTree.find(i));
         }
     }
 
@@ -37,25 +35,25 @@ class BplusTreeTest {
         bplusTree.removeFrom(MAXN/2);
         for (int i = 0; i < MAXN; i++) {
             if ( i < MAXN / 2 )
-                Assert.assertEquals(Integer.valueOf(2 * i), bplusTree.find(i));
+                Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.find(i));
             else
-                Assert.assertNull(bplusTree.find(i));
+                Assertions.assertNull(bplusTree.find(i));
         }
     }
 
     @org.junit.jupiter.api.Test
     void shouldFind() throws BTreeException {
         for (int i = 0; i < MAXN; i++) {
-            Assert.assertEquals(Integer.valueOf(2 * i), bplusTree.find(i));
+            Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.find(i));
         }
-        Assert.assertNull(bplusTree.find(-1));
-        Assert.assertNull(bplusTree.find(MAXN));
+        Assertions.assertNull(bplusTree.find(-1));
+        Assertions.assertNull(bplusTree.find(MAXN));
     }
 
     @org.junit.jupiter.api.Test
     void shouldPeekValue() throws BTreeException {
         for (int i = 0; i < MAXN; i++) {
-            Assert.assertEquals(Integer.valueOf(2 * i), bplusTree.peekValue());
+            Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.peekValue());
             bplusTree.remove(i);
         }
     }
@@ -63,7 +61,7 @@ class BplusTreeTest {
     @org.junit.jupiter.api.Test
     void shouldPeekKey() throws BTreeException {
         for (int i = 0; i < MAXN; i++) {
-            Assert.assertEquals(Integer.valueOf(i), bplusTree.peekKey());
+            Assertions.assertEquals(Integer.valueOf(i), bplusTree.peekKey());
             bplusTree.remove(i);
         }
     }
@@ -71,11 +69,11 @@ class BplusTreeTest {
     @org.junit.jupiter.api.Test
     void shouldPop() throws BTreeException {
         for (int i = 0; i < MAXN; i++) {
-            Assert.assertEquals(Integer.valueOf(2 * i), bplusTree.peekValue());
-            Assert.assertEquals(Integer.valueOf(i), bplusTree.peekKey());
+            Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.peekValue());
+            Assertions.assertEquals(Integer.valueOf(i), bplusTree.peekKey());
             bplusTree.pop();
-            Assert.assertNotEquals(Integer.valueOf(2 * i), bplusTree.peekValue());
-            Assert.assertNotEquals(Integer.valueOf(i), bplusTree.peekKey());
+            Assertions.assertNotEquals(Integer.valueOf(2 * i), bplusTree.peekValue());
+            Assertions.assertNotEquals(Integer.valueOf(i), bplusTree.peekKey());
         }
     }
 
