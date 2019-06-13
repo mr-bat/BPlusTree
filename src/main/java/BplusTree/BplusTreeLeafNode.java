@@ -1,37 +1,26 @@
 package BplusTree;
 
 import Utility.CircularFifoQueue;
-import Utility.Utils;
 
-import static Utility.Utils.searchRightmostKey;
+import static Utility.Utils.searchLeftmostKey;
 
 class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNode<Key, Value> {
     private CircularFifoQueue<Key> keys;
     private CircularFifoQueue<Value> leaves;
     private BplusTreeLeafNode next, prev;
+    private Key LeftRangeKey;
 
-    public BplusTreeLeafNode(BplusTreeLeafNode next, BplusTreeLeafNode prev) {
+    public BplusTreeLeafNode(BplusTreeLeafNode next, BplusTreeLeafNode prev, BplusTreeBranchNode parent) {
+        this(new CircularFifoQueue<>(CAPACITY), new CircularFifoQueue<>(CAPACITY), next, prev, parent);
+    }
+
+    public BplusTreeLeafNode(CircularFifoQueue<Key> keys, CircularFifoQueue<Value> leaves, BplusTreeLeafNode next, BplusTreeLeafNode prev, BplusTreeBranchNode parent) {
+        this.keys = keys;
+        this.leaves = leaves;
         this.next = next;
         this.prev = prev;
-
-        this.keys = new CircularFifoQueue<>(CAPACITY);
-        this.leaves = new CircularFifoQueue<>(CAPACITY + 1);
-    }
-
-    public BplusTreeLeafNode getNext() {
-        return next;
-    }
-
-    public BplusTreeLeafNode getPrev() {
-        return prev;
-    }
-
-    public void setNext(BplusTreeLeafNode next) {
-        this.next = next;
-    }
-
-    public void setPrev(BplusTreeLeafNode prev) {
-        this.prev = prev;
+        this.parent = parent;
+        this.LeftRangeKey = keys.peekFront();
     }
 
     @Override
@@ -41,66 +30,95 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
 
     @Override
     protected boolean fullyOccupied() {
-        return keys.isFull();
+        return keys.isAtFullCapacity();
     }
 
     @Override
     protected boolean underOccupied() {
-        return false;
+        return isEmpty();
     }
 
     @Override
-    protected void split() {
+    protected void split() throws BTreeException {
+        if (parent == null) {
+            parent = new BplusTreeBranchNode(null);
+            parent.addNode(this, peekKey());
+        }
 
+        CircularFifoQueue<Key> restOfKeys = keys.split();
+        CircularFifoQueue<Value> restOfLeaves = leaves.split();
+
+        BplusTreeLeafNode rest = new BplusTreeLeafNode(restOfKeys, restOfLeaves, next, this, parent);
+        this.next = rest;
+
+        parent.addNode(rest, rest.peekKey());
+    }
+
+    /**
+     * Currently rebalance is called only when the node is emptied
+     */
+    @Override
+    protected void rebalance() throws BTreeException {
+        if (parent != null)
+            parent.removeNode(LeftRangeKey);
     }
 
     @Override
-    protected void rebalance() {
-
-    }
-
-    public void add(Key searchKey, Value value) throws BTreeException {
-        if (searchKey == null) {
+    public void add(Key key, Value value) throws BTreeException {
+        if (key == null) {
             throw new BTreeException("Can't search on null Value");
         }
 
-        int idx = Utils.searchRightmostKey(keys, searchKey, keys.size());
-
+        int idx = searchLeftmostKey(keys, key, keys.size());
         if (idx >= 0)
-            throw new BTreeException("cannot add currently present key");
+            throw new BTreeException("Can't add currently present key");
 
         idx = -(idx + 1);
-        keys.insert(searchKey, idx);
+        if (idx == 0) {
+            if (parent != null)
+                parent.updateKeyOfNode(key, LeftRangeKey);
+            LeftRangeKey = key;
+        }
+
+        keys.insert(key, idx);
         leaves.insert(value, idx);
 
-        if ( fullyOccupied() )
+        if (fullyOccupied())
             split();
     }
-    public void remove(Key searchKey) throws BTreeException {
-        if (searchKey == null) {
+
+    @Override
+    public void remove(Key key) throws BTreeException {
+        if (key == null) {
             throw new BTreeException("Can't search on null Value");
         }
 
-        int idx = Utils.searchRightmostKey(keys, searchKey, keys.size());
+        int idx = searchLeftmostKey(keys, key, keys.size());
+        if (idx < 0)
+            throw new BTreeException("Can't delete non-existent key");
 
-        if (idx >= 0) {
-            keys.remove(idx);
-            leaves.remove(idx);
+        keys.remove(idx);
+        leaves.remove(idx);
 
-            if( underOccupied() )
-                rebalance();
+        if(underOccupied()) {
+            rebalance();
         }
     }
-    public void removeFrom(Key searchKey) throws BTreeException {
-        if (searchKey == null) {
+
+    @Override
+    public void removeFrom(Key thresholdKey) throws BTreeException {
+        if (thresholdKey == null) {
             throw new BTreeException("Can't search on null Value");
         }
 
-        int idx = searchRightmostKey(keys, searchKey, keys.size());
+        int idx = searchLeftmostKey(keys, thresholdKey, keys.size());
         idx = idx < 0 ? -(idx + 1) : idx;
 
         keys.removeFrom(idx);
         leaves.removeFrom(idx);
+
+        if(underOccupied())
+            rebalance();
     }
 
     @Override
@@ -108,7 +126,7 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
         if (searchKey == null) {
             throw new BTreeException("Can't search on null Value");
         }
-        int idx = searchRightmostKey(keys, searchKey, keys.size());
+        int idx = searchLeftmostKey(keys, searchKey, keys.size());
         if ( idx < 0 ) {
             return null;
         }
@@ -129,12 +147,14 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
     }
 
     @Override
-    public Value pop() {
+    public Value pop() throws BTreeException {
         Value result = leaves.peekFront();
 
-        keys.popFront();
         leaves.popFront();
+        keys.popFront();
 
+        if(underOccupied())
+            rebalance();
         return result;
     }
 }

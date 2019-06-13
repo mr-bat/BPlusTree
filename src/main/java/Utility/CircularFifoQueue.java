@@ -471,11 +471,10 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
 
     public void removeFrom(int index) {
         final int sz = size();
-        if (index < 0 || index >= sz) {
-            throw new NoSuchElementException(
-                    String.format("The specified index (%1$d) is outside the available range [0, %2$d)",
-                            Integer.valueOf(index), Integer.valueOf(sz)));
-        }
+        if (index < 0)
+            index = 0;
+        else if (index >= sz)
+            return;
 
         end = (start + index) % maxElements;
         if (start == end)
