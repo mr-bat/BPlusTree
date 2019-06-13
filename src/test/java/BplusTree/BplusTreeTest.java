@@ -77,9 +77,39 @@ class BplusTreeTest {
     }
 
     @org.junit.jupiter.api.Test
-    void shouldRemoveFromMiddle() throws BTreeException {
-        Assertions.assertThrows(BTreeException.class, () -> bplusTree.removeFrom(null));
+    void shouldRemoveAndAddHalfRepeatedly() throws BTreeException {
+        int range =  MAXN;
+        while (range > 1) {
+            Assertions.assertThrows(BTreeException.class, () -> bplusTree.remove(null));
+            Assertions.assertThrows(BTreeException.class, () -> bplusTree.remove(-1));
 
+            for (int i = 0; i < range; i++) {
+                Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.find(i));
+                bplusTree.remove(i);
+                Assertions.assertNull(bplusTree.find(i));
+            }
+
+            Assertions.assertThrows(BTreeException.class, () -> bplusTree.remove(0));
+
+            range /= 2;
+            for (int i = 0; i < range; i++) {
+                bplusTree.add(i, 2 * i);
+                Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.find(i));
+            }
+
+            Assertions.assertThrows(BTreeException.class, () -> bplusTree.add(null, 0));
+            Assertions.assertThrows(BTreeException.class, () -> bplusTree.add(0, 0));
+            Assertions.assertThrows(BTreeException.class, () -> bplusTree.find(null));
+        }
+    }
+
+    @org.junit.jupiter.api.Test
+    void shouldRemoveFromNull() {
+        Assertions.assertThrows(BTreeException.class, () -> bplusTree.removeFrom(null));
+    }
+
+    @org.junit.jupiter.api.Test
+    void shouldRemoveFromMiddle() throws BTreeException {
         bplusTree.removeFrom(MAXN/2);
         for (int i = 0; i < MAXN; i++) {
             if ( i < MAXN / 2 )
@@ -108,6 +138,13 @@ class BplusTreeTest {
         bplusTree.removeFrom(MAXN);
         for (int i = 0; i < MAXN; i++)
             Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.find(i));
+    }
+
+    @org.junit.jupiter.api.Test
+    void shouldRemoveFromNullLeaf() throws BTreeException {
+        bplusTree.removeFrom(0);
+        bplusTree.add(0, 0);
+        Assertions.assertThrows(BTreeException.class, () -> bplusTree.removeFrom(null));
     }
 
     @org.junit.jupiter.api.Test

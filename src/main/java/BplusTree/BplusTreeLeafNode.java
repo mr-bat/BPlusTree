@@ -66,7 +66,7 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
     @Override
     public void add(Key key, Value value) throws BTreeException {
         if (key == null) {
-            throw new BTreeException("Can't search on null Value");
+            throw new BTreeException("Can't add null keys");
         }
 
         int idx = searchLeftmostKey(keys, key, keys.size());

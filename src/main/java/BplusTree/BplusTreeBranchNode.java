@@ -105,7 +105,7 @@ class BplusTreeBranchNode<Key extends Comparable, Value> extends BplusTreeNode<K
     @Override
     public void add(Key key, Value value) throws BTreeException {
         if (key == null) {
-            throw new BTreeException("Can't search on null Value");
+            throw new BTreeException("Can't add null keys");
         }
         int idx = searchRightmostKey(keys, key, keys.size());
 
@@ -138,10 +138,8 @@ class BplusTreeBranchNode<Key extends Comparable, Value> extends BplusTreeNode<K
             children.get(idx).removeFrom(thresholdKey);
         }
         else {
-            if (idx < keys.size()) {
-                keys.removeFrom(idx);
-                children.removeFrom(idx);
-            }
+            keys.removeFrom(idx);
+            children.removeFrom(idx);
         }
     }
 

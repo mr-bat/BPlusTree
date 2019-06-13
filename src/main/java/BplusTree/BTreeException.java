@@ -16,27 +16,9 @@
 package BplusTree;
 
 public class BTreeException extends Exception {
-    private static final long serialVersionUID = -934866831149213724L;
-
-    public BTreeException() {
-        super();
-    }
-
-    public BTreeException(String message, Throwable cause, boolean enableSuppression,
-                          boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
-
-    public BTreeException(String message, Throwable cause) {
-        super(message, cause);
-    }
+    private static final long serialVersionUID = -1010101L;
 
     public BTreeException(String message) {
         super(message);
     }
-
-    public BTreeException(Throwable cause) {
-        super(cause);
-    }
-
 }
