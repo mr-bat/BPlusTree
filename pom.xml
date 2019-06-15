@@ -7,6 +7,10 @@
     <groupId>io.uten</groupId>
     <artifactId>BPlusTree</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <properties>
+        <jmh.version>1.21</jmh.version>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
@@ -64,6 +68,20 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>27.1-jre</version>
+        </dependency>
+
+        <!-- JMH Dependencies-->
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-core</artifactId>
+            <version>${jmh.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-generator-annprocess</artifactId>
+            <version>${jmh.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
