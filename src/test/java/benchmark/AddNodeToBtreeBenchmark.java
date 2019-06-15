@@ -12,7 +12,7 @@ import java.util.LinkedList;
 @State(Scope.Thread)
 public class AddNodeToBtreeBenchmark extends AbstractBenchmark {
     private static final int InitialSize = 30 * 1000;
-    BplusTree<Integer, Integer> bTree;
+    BplusTree<Integer, Integer> bplusTree;
     LinkedList<Integer> list;
     int indexIterator;
 
@@ -29,11 +29,11 @@ public class AddNodeToBtreeBenchmark extends AbstractBenchmark {
     @Setup
     public void setup() throws BTreeException {
         indexIterator = InitialSize;
-        bTree = new BplusTree<Integer, Integer>();
+        bplusTree = new BplusTree<Integer, Integer>();
         list = new LinkedList<>();
 
         for (int i = 0; i < InitialSize; i++)
-            bTree.add(i, i);
+            bplusTree.add(i, i);
 
         for (int i = InitialSize; i < 300 * InitialSize; i++)
             list.add(i);
@@ -51,20 +51,20 @@ public class AddNodeToBtreeBenchmark extends AbstractBenchmark {
     }
 
 //    @Benchmark
-    public void AddNodeToBtree() throws BTreeException {
+    public void addNodeToBtree() throws BTreeException {
         Integer currIndex = getNextIndex();
-        bTree.add(currIndex, currIndex);
+        bplusTree.add(currIndex, currIndex);
     }
 
 //    @Benchmark
-    public void AddNodeToBtreeInReverse() throws BTreeException {
+    public void addNodeToBtreeInReverse() throws BTreeException {
         Integer currIndex = getPrevIndex();
-        bTree.add(currIndex, currIndex);
+        bplusTree.add(currIndex, currIndex);
     }
 
     @Benchmark
-    public void AddNodeToBtreeRandomly() throws BTreeException {
+    public void addNodeToBtreeRandomly() throws BTreeException {
         Integer currIndex = getNextRandomIndex();
-        bTree.add(currIndex, currIndex);
+        bplusTree.add(currIndex, currIndex);
     }
 }
