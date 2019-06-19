@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 class CircularFifoQueueTest {
@@ -20,6 +21,22 @@ class CircularFifoQueueTest {
 
     @AfterEach
     void tearDown() {
+    }
+
+    @Test
+    void constructorCollection() {
+        queue = new CircularFifoQueue<>(Arrays.asList(0, 1, 2, 3));
+        get();
+    }
+
+    @Test
+    void constructorZeroSize() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new CircularFifoQueue<>(0));
+    }
+
+    @Test
+    void constructorBigSizeSmallInitialArray() {
+        Assertions.assertThrows(IllegalStateException.class, () -> new CircularFifoQueue<>(new Integer[]{1}, 2));
     }
 
     @Test
@@ -45,6 +62,18 @@ class CircularFifoQueueTest {
     }
 
     @Test
+    void peekBack() {
+        for (int i = 3; i > -1; i--) {
+            Assertions.assertEquals(Integer.valueOf(i), queue.peekBack());
+            queue.popBack();
+            Assertions.assertEquals(i, queue.size());
+        }
+
+        Assertions.assertNull(queue.peekBack());
+        Assertions.assertEquals(0, queue.size());
+    }
+
+    @Test
     void popFront() {
         for (int i = 0; i < 4; i++) {
             Assertions.assertEquals(4 - i, queue.size());
@@ -53,6 +82,24 @@ class CircularFifoQueueTest {
 
         Assertions.assertEquals(0, queue.size());
         Assertions.assertThrows(NoSuchElementException.class, () -> queue.popFront());
+    }
+
+    @Test
+    void popBack() {
+        for (int i = 3; i > -1; i--) {
+            Assertions.assertEquals(i + 1, queue.size());
+            Assertions.assertEquals(Integer.valueOf(i), queue.popBack());
+        }
+
+        Assertions.assertEquals(0, queue.size());
+        Assertions.assertThrows(NoSuchElementException.class, () -> queue.popBack());
+    }
+
+    @Test
+    void clear() {
+        queue.clear();
+        Assertions.assertTrue(queue.isEmpty());
+        Assertions.assertEquals(0, queue.size());
     }
 
     @Test
@@ -67,6 +114,26 @@ class CircularFifoQueueTest {
 
             for (int j = 1; j < 3 - i; j++) {
                 Assertions.assertEquals(Integer.valueOf(j+i+1), queue.get(j));
+            }
+        }
+
+        queue.remove(0);
+        Assertions.assertEquals(0, queue.size());
+        Assertions.assertThrows(NoSuchElementException.class, () -> queue.remove(0));
+    }
+
+    @Test
+    void removeCircular() {
+        queue.popFront();
+        queue.pushBack(4);
+
+        for (int i = 0; i < 3; i++) {
+            Assertions.assertEquals(4 - i, queue.size());
+            queue.remove(1);
+            Assertions.assertEquals(Integer.valueOf(1), queue.get(0));
+
+            for (int j = 1; j < 3 - i; j++) {
+                Assertions.assertEquals(Integer.valueOf(j+i+2), queue.get(j));
             }
         }
 
@@ -133,8 +200,8 @@ class CircularFifoQueueTest {
 
     @Test
     void set() {
-        Assertions.assertThrows(NoSuchElementException.class, () -> queue.get(-1));
-        Assertions.assertThrows(NoSuchElementException.class, () -> queue.get(4));
+        Assertions.assertThrows(NoSuchElementException.class, () -> queue.set(-1, 1));
+        Assertions.assertThrows(NoSuchElementException.class, () -> queue.set(4, 1));
 
         for (int i = 0; i < 4; i++) {
             queue.set(i, 5);
@@ -235,12 +302,25 @@ class CircularFifoQueueTest {
     @Test
     void pushBack() {
         Assertions.assertThrows(IllegalStateException.class, () -> queue.pushBack(5));
+        Assertions.assertThrows(NullPointerException.class, () -> queue.pushBack(null));
 
         queue.popFront();
         queue.pushBack(4);
         Assertions.assertEquals(4, queue.size());
         for (int i = 0; i < 4; i++)
             Assertions.assertEquals(Integer.valueOf(i + 1), queue.get(i));
+    }
+
+    @Test
+    void pushFront() {
+        Assertions.assertThrows(IllegalStateException.class, () -> queue.pushFront(5));
+        Assertions.assertThrows(NullPointerException.class, () -> queue.pushFront(null));
+
+        queue.popBack();
+        queue.pushFront(-1);
+        Assertions.assertEquals(4, queue.size());
+        for (int i = 0; i < 4; i++)
+            Assertions.assertEquals(Integer.valueOf(i - 1), queue.get(i));
     }
 
     @Test
