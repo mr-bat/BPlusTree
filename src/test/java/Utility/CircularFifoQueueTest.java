@@ -179,7 +179,7 @@ class CircularFifoQueueTest {
     void splitOddSize() {
         queue = new CircularFifoQueue<>(5);
         for (int i = 0; i < 5; i++)
-            queue.add(i);
+            queue.pushBack(i);
 
         CircularFifoQueue<Integer> secondHalf = queue.split();
 
