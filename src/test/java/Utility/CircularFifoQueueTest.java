@@ -36,18 +36,22 @@ class CircularFifoQueueTest {
     void peekFront() {
         for (int i = 0; i < 4; i++) {
             Assertions.assertEquals(Integer.valueOf(i), queue.peekFront());
+            Assertions.assertEquals(4 - i, queue.size());
             queue.popFront();
         }
 
         Assertions.assertNull(queue.peekFront());
+        Assertions.assertEquals(0, queue.size());
     }
 
     @Test
     void popFront() {
         for (int i = 0; i < 4; i++) {
+            Assertions.assertEquals(4 - i, queue.size());
             Assertions.assertEquals(Integer.valueOf(i), queue.popFront());
         }
 
+        Assertions.assertEquals(0, queue.size());
         Assertions.assertThrows(NoSuchElementException.class, () -> queue.popFront());
     }
 
@@ -57,6 +61,7 @@ class CircularFifoQueueTest {
         Assertions.assertThrows(NoSuchElementException.class, () -> queue.remove(4));
 
         for (int i = 0; i < 3; i++) {
+            Assertions.assertEquals(4 - i, queue.size());
             queue.remove(1);
             Assertions.assertEquals(Integer.valueOf(0), queue.get(0));
 
@@ -66,6 +71,7 @@ class CircularFifoQueueTest {
         }
 
         queue.remove(0);
+        Assertions.assertEquals(0, queue.size());
         Assertions.assertThrows(NoSuchElementException.class, () -> queue.remove(0));
     }
 
@@ -73,6 +79,7 @@ class CircularFifoQueueTest {
     void removeFrom() {
         queue.removeFrom(2);
 
+        Assertions.assertEquals(2, queue.size());
         Assertions.assertEquals(Integer.valueOf(0), queue.get(0));
         Assertions.assertEquals(Integer.valueOf(1), queue.get(1));
     }
@@ -81,6 +88,7 @@ class CircularFifoQueueTest {
     void removeFromBeforeBeginning() {
         queue.removeFrom(-1);
         Assertions.assertTrue(queue.isEmpty());
+        Assertions.assertEquals(0, queue.size());
     }
 
     @Test
@@ -102,12 +110,14 @@ class CircularFifoQueueTest {
 
 
         for (int i = 1; i > -1; i--) {
+            Assertions.assertEquals(3 - i, queue.size());
             queue.insert(i, 0);
 
             for (int j = 0; j < queue.size(); j++) {
                 Assertions.assertEquals(Integer.valueOf(i + j), queue.get(j));
             }
         }
+        Assertions.assertEquals(4, queue.size());
     }
 
     @Test
@@ -115,8 +125,10 @@ class CircularFifoQueueTest {
         Assertions.assertThrows(NoSuchElementException.class, () -> queue.get(-1));
         Assertions.assertThrows(NoSuchElementException.class, () -> queue.get(4));
 
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 4; i++) {
+            Assertions.assertEquals(4, queue.size());
             Assertions.assertEquals(Integer.valueOf(i), queue.get(i));
+        }
     }
 
     @Test
@@ -126,6 +138,7 @@ class CircularFifoQueueTest {
 
         for (int i = 0; i < 4; i++) {
             queue.set(i, 5);
+            Assertions.assertEquals(4, queue.size());
             Assertions.assertEquals(Integer.valueOf(5), queue.get(i));
         }
     }
@@ -225,6 +238,7 @@ class CircularFifoQueueTest {
 
         queue.popFront();
         queue.pushBack(4);
+        Assertions.assertEquals(4, queue.size());
         for (int i = 0; i < 4; i++)
             Assertions.assertEquals(Integer.valueOf(i + 1), queue.get(i));
     }
