@@ -98,7 +98,9 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
      */
     public CircularFifoQueue(final Collection<? extends E> coll) {
         this(coll.size());
-        addAll(coll);
+
+        for (E element : coll)
+            pushBack(element);
     }
 
     public CircularFifoQueue(final E[] elements, final int size) {
@@ -285,7 +287,6 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
         return true;
     }
 
-    @Deprecated
     public boolean pushFront(final E element) {
         if (null == element) {
             throw new NullPointerException("Attempted to add null object to queue");
@@ -295,7 +296,7 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
             throw new IllegalStateException("Can not add when queue is full");
         }
 
-        if (--start == 0) {
+        if (--start < 0) {
             start = maxElements - 1;
         }
 
@@ -309,7 +310,6 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
         return true;
     }
 
-    @Deprecated
     public E peekBack() {
         if (isEmpty()) {
             return null;
@@ -351,7 +351,6 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
         return element;
     }
 
-    @Deprecated
     public E popBack() {
         if (isEmpty()) {
             throw new NoSuchElementException("queue is empty");
