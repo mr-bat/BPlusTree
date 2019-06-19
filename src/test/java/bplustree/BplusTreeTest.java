@@ -1,6 +1,5 @@
 package bplustree;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 
 import static java.lang.Math.min;
@@ -18,6 +17,18 @@ class BplusTreeTest {
         }
         bplusTree.add(0, 0);
     }
+
+    @org.junit.jupiter.api.Test
+    void shouldBeEmpty() throws BTreeException {
+        bplusTree.removeFrom(0);
+        Assertions.assertTrue(bplusTree.isEmpty());
+    }
+
+    @org.junit.jupiter.api.Test
+    void shouldBeFull() throws BTreeException {
+        Assertions.assertFalse(bplusTree.isEmpty());
+    }
+
 
     @org.junit.jupiter.api.Test
     void shouldAdd() throws BTreeException {
@@ -183,9 +194,5 @@ class BplusTreeTest {
             Assertions.assertNotEquals(2 * i, bplusTree.peekValue());
             Assertions.assertNotEquals(i, bplusTree.peekKey());
         }
-    }
-
-    @AfterEach
-    void tearDown() {
     }
 }
