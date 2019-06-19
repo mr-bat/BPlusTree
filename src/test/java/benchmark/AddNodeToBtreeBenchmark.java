@@ -11,7 +11,7 @@ import java.util.LinkedList;
 
 @State(Scope.Thread)
 public class AddNodeToBtreeBenchmark extends AbstractBenchmark {
-    private static final int InitialSize = 30 * 1000;
+    private static final int InitialSize = 35 * 1000, ReserveredSize = 3500 * InitialSize;
     BplusTree<Integer, Integer> bplusTree;
     LinkedList<Integer> list;
     int indexIterator;
@@ -29,13 +29,13 @@ public class AddNodeToBtreeBenchmark extends AbstractBenchmark {
     @Setup
     public void setup() throws BTreeException {
         indexIterator = InitialSize;
-        bplusTree = new BplusTree<Integer, Integer>();
+        bplusTree = new BplusTree<>();
         list = new LinkedList<>();
 
         for (int i = 0; i < InitialSize; i++)
             bplusTree.add(i, i);
 
-        for (int i = InitialSize; i < 300 * InitialSize; i++)
+        for (int i = InitialSize; i < ReserveredSize; i++)
             list.add(i);
         java.util.Collections.shuffle(list);
     }
@@ -50,13 +50,13 @@ public class AddNodeToBtreeBenchmark extends AbstractBenchmark {
         return list.pop();
     }
 
-//    @Benchmark
+    @Benchmark
     public void addNodeToBtree() throws BTreeException {
         Integer currIndex = getNextIndex();
         bplusTree.add(currIndex, currIndex);
     }
 
-//    @Benchmark
+    @Benchmark
     public void addNodeToBtreeInReverse() throws BTreeException {
         Integer currIndex = getPrevIndex();
         bplusTree.add(currIndex, currIndex);
