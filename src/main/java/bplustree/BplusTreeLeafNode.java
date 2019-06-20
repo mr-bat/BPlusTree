@@ -1,8 +1,8 @@
 package bplustree;
 
-import Utility.CircularFifoQueue;
+import utility.CircularFifoQueue;
 
-import static Utility.Utils.searchLeftmostKey;
+import static utility.Utils.searchLeftmostKey;
 
 class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNode<Key, Value> {
     private CircularFifoQueue<Key> keys;
