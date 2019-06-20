@@ -1,4 +1,4 @@
-package Utility;
+package utility;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -238,13 +238,13 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
      *
      * @param element  the element to add
      * @return true, always
-     * @throws NullPointerException  if the given element is null
+     * @throws IllegalArgumentException  if the given element is null
      * @throws IllegalStateException if the queue is full
      */
     @Override @Deprecated
     public boolean add(final E element) {
         if (null == element) {
-            throw new NullPointerException("Attempted to add null object to queue");
+            throw new IllegalArgumentException("Attempted to add null object to queue");
         }
 
         if (isAtFullCapacity()) {
@@ -309,7 +309,7 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
      *
      * @param element  the element to add
      * @return true, always
-     * @throws NullPointerException  if the given element is null
+     * @throws IllegalArgumentException  if the given element is null
      */
     @Override @Deprecated
     public boolean offer(final E element) {
@@ -364,7 +364,7 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
     @Deprecated
     public boolean pushFront(final E element) {
         if (null == element) {
-            throw new NullPointerException("Attempted to add null object to queue");
+            throw new IllegalArgumentException("Attempted to add null object to queue");
         }
 
         if (isAtFullCapacity()) {
@@ -490,7 +490,7 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
         }
 
         if (null == element) {
-            throw new NullPointerException("Attempted to add null object to queue");
+            throw new IllegalArgumentException("Attempted to add null object to queue");
         }
 
         if (isAtFullCapacity()) {
