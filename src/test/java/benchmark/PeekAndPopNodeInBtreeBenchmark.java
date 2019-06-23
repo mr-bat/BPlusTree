@@ -9,6 +9,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.infra.Blackhole;
 import org.openjdk.jmh.runner.options.Options;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 
 @State(Scope.Thread)
@@ -31,6 +32,9 @@ public class PeekAndPopNodeInBtreeBenchmark extends AbstractBenchmark {
      */
     @Setup
     public void setup() throws BTreeException {
+        System.out.println("Begin");
+        long startTime = System.nanoTime();
+
         final int RandomizedSize = 3000 * 1000;
         assert InitialSize % RandomizedSize == 0;
 
@@ -47,6 +51,9 @@ public class PeekAndPopNodeInBtreeBenchmark extends AbstractBenchmark {
                 bplusTree.add(currIndex, currIndex);
             }
         }
+
+        long endTime = System.nanoTime();
+        System.out.println(MessageFormat.format("Initialized @ {0}ns", endTime - startTime));
     }
 
     @Benchmark

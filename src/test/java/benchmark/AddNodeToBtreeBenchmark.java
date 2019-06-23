@@ -7,6 +7,8 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.runner.options.Options;
+
+import java.text.MessageFormat;
 import java.util.LinkedList;
 
 @State(Scope.Thread)
@@ -28,6 +30,9 @@ public class AddNodeToBtreeBenchmark extends AbstractBenchmark {
 
     @Setup
     public void setup() throws BTreeException {
+        System.out.println("Begin");
+        long startTime = System.nanoTime();
+
         indexIterator = InitialSize;
         bplusTree = new BplusTree<>();
         list = new LinkedList<>();
@@ -38,6 +43,9 @@ public class AddNodeToBtreeBenchmark extends AbstractBenchmark {
         for (int i = InitialSize; i < ReserveredSize; i++)
             list.add(i);
         java.util.Collections.shuffle(list);
+
+        long endTime = System.nanoTime();
+        System.out.println(MessageFormat.format("Initialized @ {0}ns", endTime - startTime));
     }
 
     int getNextIndex() {
