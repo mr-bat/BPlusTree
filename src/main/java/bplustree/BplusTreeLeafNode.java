@@ -8,18 +8,20 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
     private CircularFifoQueue<Key> keys;
     private CircularFifoQueue<Value> leaves;
     private BplusTreeLeafNode next, prev;
+    private BplusTree tree;
     private Key LeftRangeKey;
 
-    public BplusTreeLeafNode(BplusTreeLeafNode next, BplusTreeLeafNode prev, BplusTreeBranchNode parent) {
-        this(new CircularFifoQueue<>(CAPACITY), new CircularFifoQueue<>(CAPACITY), next, prev, parent);
+    public BplusTreeLeafNode(BplusTreeLeafNode next, BplusTreeLeafNode prev, BplusTreeBranchNode parent, BplusTree tree) {
+        this(new CircularFifoQueue<>(CAPACITY), new CircularFifoQueue<>(CAPACITY), next, prev, parent, tree);
     }
 
-    public BplusTreeLeafNode(CircularFifoQueue<Key> keys, CircularFifoQueue<Value> leaves, BplusTreeLeafNode next, BplusTreeLeafNode prev, BplusTreeBranchNode parent) {
+    public BplusTreeLeafNode(CircularFifoQueue<Key> keys, CircularFifoQueue<Value> leaves, BplusTreeLeafNode next, BplusTreeLeafNode prev, BplusTreeBranchNode parent, BplusTree tree) {
         this.keys = keys;
         this.leaves = leaves;
         this.next = next;
         this.prev = prev;
         this.parent = parent;
+        this.tree = tree;
         this.LeftRangeKey = keys.peekFront();
     }
 
@@ -48,7 +50,7 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
         CircularFifoQueue<Key> restOfKeys = keys.split();
         CircularFifoQueue<Value> restOfLeaves = leaves.split();
 
-        BplusTreeLeafNode rest = new BplusTreeLeafNode(restOfKeys, restOfLeaves, next, this, parent);
+        BplusTreeLeafNode rest = new BplusTreeLeafNode(restOfKeys, restOfLeaves, next, this, parent, tree);
         this.next = rest;
 
         parent.addNode(rest, rest.peekKey());
@@ -59,6 +61,8 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
      */
     @Override
     protected void rebalance() throws BTreeException {
+        tree.setRecentlyUsed(null);
+
         if (parent != null)
             parent.removeNode(LeftRangeKey);
     }
@@ -73,6 +77,7 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
         if (key == null) {
             throw new BTreeException("Can't add null keys");
         }
+        tree.setRecentlyUsed(this);
 
         int idx = searchLeftmostKey(keys, key, keys.size());
         if (idx >= 0)
@@ -97,6 +102,7 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
         if (key == null) {
             throw new BTreeException("Can't search on null Value");
         }
+        tree.setRecentlyUsed(this);
 
         int idx = searchLeftmostKey(keys, key, keys.size());
         if (idx < 0)
@@ -131,6 +137,8 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
         if (searchKey == null) {
             throw new BTreeException("Can't search on null Value");
         }
+        tree.setRecentlyUsed(this);
+
         int idx = searchLeftmostKey(keys, searchKey, keys.size());
         if ( idx < 0 ) {
             return null;
