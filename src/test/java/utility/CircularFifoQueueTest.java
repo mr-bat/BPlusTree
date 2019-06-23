@@ -310,7 +310,7 @@ class CircularFifoQueueTest {
     @Test
     void pushFront() {
         Assertions.assertThrows(IllegalStateException.class, () -> queue.pushFront(5));
-        Assertions.assertThrows(NullPointerException.class, () -> queue.pushFront(null));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> queue.pushFront(null));
 
         queue.popBack();
         queue.pushFront(-1);
