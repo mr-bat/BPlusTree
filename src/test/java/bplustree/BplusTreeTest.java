@@ -1,7 +1,6 @@
 package bplustree;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 
 import static java.lang.Math.min;
 
@@ -26,7 +25,7 @@ class BplusTreeTest {
     }
 
     @org.junit.jupiter.api.Test
-    void shouldBeFull() throws BTreeException {
+    void shouldBeFull() {
         Assertions.assertFalse(bplusTree.isEmpty());
     }
 
