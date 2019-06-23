@@ -462,7 +462,8 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
             throw new IllegalStateException("CircularFifoQueue should be full before split");
 
         E[] restElements = (E[]) Array.newInstance(elements.getClass().getComponentType(), maxElements);
-        int midIndex = start + (maxElements / 2), restLength = (maxElements + 1) / 2;
+        int midIndex = start + (maxElements / 2);
+        int restLength = (maxElements + 1) / 2;
         if (midIndex < maxElements)
             System.arraycopy(elements, midIndex, restElements, 0, max(restLength - start, 0));
         System.arraycopy(elements, max((maxElements - restLength) - maxElements + start, 0), restElements, max(restLength - start, 0), min(restLength, start));
