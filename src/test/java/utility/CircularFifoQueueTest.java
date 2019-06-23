@@ -1,10 +1,8 @@
 package utility;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openjdk.jmh.annotations.TearDown;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;
@@ -204,8 +202,8 @@ class CircularFifoQueueTest {
 
     @Test
     void insertAndSwapBackwards() {
-        queue = new CircularFifoQueue<>(new Integer[]{0, 2, 3, 4}, 3);
-        queue.insert(1, 1);
+        queue = new CircularFifoQueue<>(new Integer[]{0, 1, 3, 4, 5, 7}, 5);
+        queue.insert(2, 2);
         get();
     }
 
@@ -219,12 +217,12 @@ class CircularFifoQueueTest {
     @Test
     void get() {
         Assertions.assertThrows(NoSuchElementException.class, () -> queue.get(-1));
-        Assertions.assertThrows(NoSuchElementException.class, () -> queue.get(4));
+        Assertions.assertThrows(NoSuchElementException.class, () -> queue.get(queue.maxSize()));
 
-        for (int i = 0; i < 4; i++) {
-            Assertions.assertEquals(4, queue.size());
+        for (int i = 0; i < queue.maxSize(); i++) {
             Assertions.assertEquals(Integer.valueOf(i), queue.get(i));
         }
+        Assertions.assertEquals(queue.maxSize(), queue.size());
     }
 
     @Test
