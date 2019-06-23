@@ -2,6 +2,7 @@ package benchmark;
 
 import bplustree.BTreeException;
 import bplustree.BplusTree;
+import org.junit.Ignore;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
@@ -45,9 +46,9 @@ public class PeekAndPopNodeInBtreeBenchmark extends AbstractBenchmark {
             list.add(i);
         java.util.Collections.shuffle(list);
 
-        for (int i = 0; i < InitialSize / RandomizedSize; i++) {
+        for (int i = 0; i <= InitialSize / RandomizedSize; i++) {
             for (int j = 0; j < RandomizedSize; j++) {
-                int currIndex = j + i * RandomizedSize;
+                int currIndex = list.get(j) + i * RandomizedSize;
                 bplusTree.add(currIndex, currIndex);
             }
         }

@@ -9,14 +9,14 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.runner.options.Options;
 
 import java.text.MessageFormat;
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 @State(Scope.Thread)
 public class AddNodeToBtreeBenchmark extends AbstractBenchmark {
-    private static final int InitialSize = 35 * 1000, ReserveredSize = 3500 * InitialSize;
-    BplusTree<Integer, Integer> bplusTree;
-    LinkedList<Integer> list;
-    int indexIterator;
+    private static final int InitialSize = 35 * 1000, Period = 3500;
+    private BplusTree<Integer, Integer> bplusTree;
+    private ArrayList<Integer> list;
+    private int indexIterator, periodCounter = 1, listIndex = 0;
 
     @Override
     public Options setupBenchmarkAndBuildAdditionalOption() {
@@ -33,15 +33,14 @@ public class AddNodeToBtreeBenchmark extends AbstractBenchmark {
         System.out.println("Begin");
         long startTime = System.nanoTime();
 
-        indexIterator = InitialSize;
+        indexIterator = InitialSize * Period;
         bplusTree = new BplusTree<>();
-        list = new LinkedList<>();
+        list = new ArrayList<>();
 
-        for (int i = 0; i < InitialSize; i++)
-            bplusTree.add(i, i);
-
-        for (int i = InitialSize; i < ReserveredSize; i++)
+        for (int i = 0; i < InitialSize; i++) {
+            bplusTree.add(i * Period, i * Period);
             list.add(i);
+        }
         java.util.Collections.shuffle(list);
 
         long endTime = System.nanoTime();
@@ -55,7 +54,12 @@ public class AddNodeToBtreeBenchmark extends AbstractBenchmark {
         return -indexIterator++;
     }
     int getNextRandomIndex() {
-        return list.pop();
+        if (listIndex == InitialSize) {
+            listIndex = 0;
+            periodCounter++;
+        }
+
+        return list.get(listIndex++) * Period + periodCounter;
     }
 
     @Benchmark
