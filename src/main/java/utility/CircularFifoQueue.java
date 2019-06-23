@@ -260,7 +260,7 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
      */
     public boolean pushBack(final E element) {
         if (null == element) {
-            throw new NullPointerException("Attempted to add null object to queue");
+            throw new IllegalArgumentException("Attempted to add null object to queue");
         }
 
         if (isAtFullCapacity()) {
