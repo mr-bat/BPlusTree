@@ -18,37 +18,29 @@ package utility;
  */
 
 import com.google.common.annotations.Beta;
-import org.apache.commons.collections4.BoundedCollection;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Array;
-import java.util.*;
+import java.util.AbstractCollection;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import static java.lang.StrictMath.max;
 import static java.lang.StrictMath.min;
 
 /**
- * CircularFifoQueue is a first-in first-out queue with a fixed size that
- * replaces its oldest element if full.
- * <p>
- * The removal order of a {@link org.apache.commons.collections4.queue.CircularFifoQueue} is based on the
- * insertion order; elements are removed in the same order in which they
- * were added.  The iteration order is the same as the removal order.
- * <p>
- * The {@link #add(Object)}, {@link #remove()}, {@link #peek()}, {@link #poll},
- * {@link #offer(Object)} operations all perform in constant time.
- * All other operations perform in linear time or worse.
- * <p>
+ * CircularFifoQueue is a first-in first-out queue with a fixed size
  * This queue prevents null objects from being added.
  *
  * @param <E> the type of elements in this collection
  * @since 4.0
  */
 public class CircularFifoQueue<E> extends AbstractCollection<E>
-        implements Queue<E>, BoundedCollection<E>, Serializable {
+        implements Serializable {
 
     /** Serialization version. */
     private static final long serialVersionUID = -8423413834657610406L;
@@ -105,7 +97,9 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
      */
     public CircularFifoQueue(final Collection<? extends E> coll) {
         this(coll.size());
-        addAll(coll);
+
+        for (E element : coll)
+            pushBack(element);
     }
 
     public CircularFifoQueue(final E[] elements, final int size) {
@@ -189,19 +183,6 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
     }
 
     /**
-     * {@inheritDoc}
-     * <p>
-     * A {@code CircularFifoQueue} can never be full, thus this returns always
-     * {@code false}.
-     *
-     * @return always returns {@code false}
-     */
-    @Override @Deprecated
-    public boolean isFull() {
-        return false;
-    }
-
-    /**
      * Returns {@code true} if the capacity limit of this queue has been reached,
      * i.e. the number of elements stored in the queue equals its maximum size.
      *
@@ -217,7 +198,6 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
      *
      * @return the maximum number of elements the collection can hold
      */
-    @Override
     public int maxSize() {
         return maxElements;
     }
@@ -225,43 +205,12 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
     /**
      * Clears this queue.
      */
-    @Override @Deprecated
+    @Override
     public void clear() {
         full = false;
         start = 0;
         end = 0;
 //        Arrays.fill(elements, null);
-    }
-
-    /**
-     * Adds the given element to this queue. If the queue is full an exception is thrown.
-     *
-     * @param element  the element to add
-     * @return true, always
-     * @throws IllegalArgumentException  if the given element is null
-     * @throws IllegalStateException if the queue is full
-     */
-    @Override @Deprecated
-    public boolean add(final E element) {
-        if (null == element) {
-            throw new IllegalArgumentException("Attempted to add null object to queue");
-        }
-
-        if (isAtFullCapacity()) {
-            throw new IllegalStateException("Can not add when queue is full");
-        }
-
-        elements[end++] = element;
-
-        if (end >= maxElements) {
-            end = 0;
-        }
-
-        if (end == start) {
-            full = true;
-        }
-
-        return true;
     }
 
     /**
@@ -301,77 +250,46 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
         elements[idx] = element;
     }
 
-    //-----------------------------------------------------------------------
-
     /**
-     * Adds the given element to this queue. If the queue is full, the least recently added
-     * element is discarded so that a new element can be inserted.
+     * Adds the given element to back of this queue. If the queue is full an exception is thrown.
      *
      * @param element  the element to add
      * @return true, always
+     * @throws IllegalStateException if the queue is full
      * @throws IllegalArgumentException  if the given element is null
      */
-    @Override @Deprecated
-    public boolean offer(final E element) {
-        return add(element);
-    }
-
-    @Override @Deprecated
-    public E poll() {
-        if (isEmpty()) {
-            return null;
-        }
-        return remove();
-    }
-
-    @Override @Deprecated
-    public E element() {
-        if (isEmpty()) {
-            throw new NoSuchElementException("queue is empty");
-        }
-        return peek();
-    }
-
-    @Override @Deprecated
-    public E peek() {
-        if (isEmpty()) {
-            return null;
-        }
-        return elements[start];
-    }
-
-    @Override @Deprecated
-    public E remove() {
-        if (isEmpty()) {
-            throw new NoSuchElementException("queue is empty");
+    public boolean pushBack(final E element) {
+        if (null == element) {
+            throw new IllegalArgumentException("Attempted to add null object to queue");
         }
 
-        final E element = elements[start];
-        if (null != element) {
-            elements[start++] = null;
-
-            if (start >= maxElements) {
-                start = 0;
-            }
-            full = false;
+        if (isAtFullCapacity()) {
+            throw new IllegalStateException("Can not add when queue is full");
         }
-        return element;
+
+        elements[end++] = element;
+
+        if (end >= maxElements) {
+            end = 0;
+        }
+
+        if (end == start) {
+            full = true;
+        }
+
+        return true;
     }
 
-    //-----------------------------------------------------------------------
-    public boolean pushBack(final E element) { return add(element); }
-
-    @Deprecated
     public boolean pushFront(final E element) {
         if (null == element) {
             throw new IllegalArgumentException("Attempted to add null object to queue");
         }
 
         if (isAtFullCapacity()) {
-            remove();
+            throw new IllegalStateException("Can not add when queue is full");
         }
 
-        if (--start == 0) {
+        if (--start < 0) {
             start = maxElements - 1;
         }
 
@@ -384,7 +302,6 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
         return true;
     }
 
-    @Deprecated
     public E peekBack() {
         if (isEmpty()) {
             return null;
@@ -425,7 +342,6 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
         return element;
     }
 
-    @Deprecated
     public E popBack() {
         if (isEmpty()) {
             throw new NoSuchElementException("queue is empty");
@@ -595,7 +511,7 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
 
                 // First element can be removed quickly
                 if (lastReturnedIndex == start) {
-                    CircularFifoQueue.this.remove();
+                    CircularFifoQueue.this.popFront();
                     lastReturnedIndex = -1;
                     return;
                 }
