@@ -1,6 +1,9 @@
 package bplustree;
 
 import org.junit.jupiter.api.Assertions;
+import utility.CircularFifoQueue;
+
+import java.lang.reflect.Field;
 
 import static java.lang.Math.min;
 
@@ -16,6 +19,23 @@ class BplusTreeTest {
             bplusTree.add(i, 2 * i);
         }
         bplusTree.add(0, 0);
+    }
+
+    @org.junit.jupiter.api.Test
+    void shouldBeInRange() throws NoSuchFieldException, IllegalAccessException {
+        Field _root = BplusTree.class.getDeclaredField("_root");
+        _root.setAccessible(true);
+        Field keys = BplusTreeNode.class.getDeclaredField("keys");
+        keys.setAccessible(true);
+        Field children = BplusTreeBranchNode.class.getDeclaredField("children");
+        children.setAccessible(true);
+        BplusTreeBranchNode node = (BplusTreeBranchNode) ((CircularFifoQueue<BplusTreeNode>) children.get(_root.get(bplusTree))).peekFront();
+        CircularFifoQueue<Integer> queue = (CircularFifoQueue) keys.get(node);
+
+        Assertions.assertTrue(node.isInRange(queue.peekFront()));
+        Assertions.assertTrue(node.isInRange(queue.peekBack()));
+        Assertions.assertFalse(node.isInRange(queue.peekFront() - 1));
+        Assertions.assertFalse(node.isInRange(queue.peekBack() + 1));
     }
 
     @org.junit.jupiter.api.Test
