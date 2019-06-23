@@ -2,7 +2,6 @@ package benchmark;
 
 import bplustree.BTreeException;
 import bplustree.BplusTree;
-import org.junit.Ignore;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
