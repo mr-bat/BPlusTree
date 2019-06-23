@@ -15,6 +15,7 @@ abstract class BplusTreeNode<Key extends Comparable, Value> {
     protected abstract boolean underOccupied();
     protected abstract void split() throws BTreeException;
     protected abstract void rebalance() throws BTreeException;
+    public abstract boolean isInRange(Key key);
 
     public abstract void add(Key searchKey, Value value) throws BTreeException;
     public abstract void remove(Key searchKey) throws BTreeException;
