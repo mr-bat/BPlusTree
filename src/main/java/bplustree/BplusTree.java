@@ -13,13 +13,19 @@ public class BplusTree<Key extends Comparable<Key>, Value> {
     }
 
     public void add(Key key, Value value) throws BTreeException {
-        _root.add(key, value);
+        if (recentlyUsed != null && recentlyUsed.getParent() != null && recentlyUsed.getParent().isInRange(key))
+            recentlyUsed.getParent().add(key, value);
+        else
+            _root.add(key, value);
 
         if (_root.getParent() != null)
             _root = _root.getParent();
     }
     public void remove(Key key) throws BTreeException {
-        _root.remove(key);
+        if (recentlyUsed != null && recentlyUsed.getParent() != null && recentlyUsed.getParent().isInRange(key))
+            recentlyUsed.getParent().remove(key);
+        else
+            _root.remove(key);
 
         if (_root.isEmpty())
             _root = new BplusTreeLeafNode<Key, Value>(null, null, null, this);
@@ -27,11 +33,16 @@ public class BplusTree<Key extends Comparable<Key>, Value> {
     public void removeFrom(Key key) throws BTreeException {
         _root.removeFrom(key);
 
-        if (_root.isEmpty())
+        if (_root.isEmpty()) {
             _root = new BplusTreeLeafNode<Key, Value>(null, null, null, this);
+            recentlyUsed = null;
+        }
     }
     public Value find(Key key) throws BTreeException {
-        return _root.find(key);
+        if (recentlyUsed != null && recentlyUsed.getParent() != null && recentlyUsed.getParent().isInRange(key))
+            return (Value) recentlyUsed.getParent().find(key);
+        else
+            return _root.find(key);
     }
     public Value peekValue() {
         return _root.peekValue();

@@ -68,7 +68,7 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
     @Override
     public void add(Key key, Value value) throws BTreeException {
         if (key == null) {
-            throw new BTreeException("Can't add null keys");
+            throw new BTreeException("Can't work with null key");
         }
         tree.setRecentlyUsed(this);
 
@@ -93,7 +93,7 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
     @Override
     public void remove(Key key) throws BTreeException {
         if (key == null) {
-            throw new BTreeException("Can't search on null Value");
+            throw new BTreeException("Can't work with null key");
         }
         tree.setRecentlyUsed(this);
 
@@ -128,7 +128,7 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
     @Override
     public Value find(Key searchKey) throws BTreeException {
         if (searchKey == null) {
-            throw new BTreeException("Can't search on null Value");
+            throw new BTreeException("Can't work with null key");
         }
         tree.setRecentlyUsed(this);
 

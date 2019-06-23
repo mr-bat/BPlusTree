@@ -20,7 +20,9 @@ abstract class BplusTreeNode<Key extends Comparable, Value> {
     protected abstract void split() throws BTreeException;
     protected abstract void rebalance() throws BTreeException;
 
-    public boolean isInRange(Key key) {
+    public boolean isInRange(Key key) throws BTreeException {
+        if (key == null)
+            throw new BTreeException("Can't work with null key");
         return key.compareTo(LeftRangeKey) > -1 && key.compareTo(keys.peekBack()) < 1;
     }
 

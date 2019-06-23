@@ -22,7 +22,7 @@ class BplusTreeTest {
     }
 
     @org.junit.jupiter.api.Test
-    void shouldBeInRange() throws NoSuchFieldException, IllegalAccessException {
+    void shouldBeInRange() throws NoSuchFieldException, IllegalAccessException, BTreeException {
         Field _root = BplusTree.class.getDeclaredField("_root");
         _root.setAccessible(true);
         Field keys = BplusTreeNode.class.getDeclaredField("keys");
