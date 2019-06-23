@@ -4,6 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openjdk.jmh.annotations.TearDown;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;
@@ -119,6 +120,24 @@ class CircularFifoQueueTest {
     }
 
     @Test
+    void removeAndSwapBackwards() {
+        queue.remove(1);
+
+        Assertions.assertEquals(Integer.valueOf(0), queue.get(0));
+        Assertions.assertEquals(Integer.valueOf(2), queue.get(1));
+        Assertions.assertEquals(Integer.valueOf(3), queue.get(2));
+    }
+
+    @Test
+    void removeAndSwapForwards() {
+        queue.remove(2);
+
+        Assertions.assertEquals(Integer.valueOf(0), queue.get(0));
+        Assertions.assertEquals(Integer.valueOf(1), queue.get(1));
+        Assertions.assertEquals(Integer.valueOf(3), queue.get(2));
+    }
+
+    @Test
     void removeCircular() {
         queue.popFront();
         queue.pushBack(4);
@@ -181,6 +200,20 @@ class CircularFifoQueueTest {
             }
         }
         Assertions.assertEquals(4, queue.size());
+    }
+
+    @Test
+    void insertAndSwapBackwards() {
+        queue = new CircularFifoQueue<>(new Integer[]{0, 2, 3, 4}, 3);
+        queue.insert(1, 1);
+        get();
+    }
+
+    @Test
+    void insertAndSwapForwards() {
+        queue = new CircularFifoQueue<>(new Integer[]{0, 1, 3, 4}, 3);
+        queue.insert(2, 2);
+        get();
     }
 
     @Test
