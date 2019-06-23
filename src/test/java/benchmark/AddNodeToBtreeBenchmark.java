@@ -2,10 +2,7 @@ package benchmark;
 
 import bplustree.BTreeException;
 import bplustree.BplusTree;
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.options.Options;
 
 import java.text.MessageFormat;
@@ -78,5 +75,11 @@ public class AddNodeToBtreeBenchmark extends AbstractBenchmark {
     public void addNodeToBtreeRandomly() throws BTreeException {
         Integer currIndex = getNextRandomIndex();
         bplusTree.add(currIndex, currIndex);
+    }
+
+    @TearDown
+    public void tearDown() {
+        System.out.println(MessageFormat.format("test finished with {0} hits and {1} misses", bplusTree.getHit(), bplusTree.getMiss()));
+        System.out.println(MessageFormat.format("sample depth is {0}", bplusTree.getSampleDepth()));
     }
 }

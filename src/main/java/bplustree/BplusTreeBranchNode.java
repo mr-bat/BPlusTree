@@ -87,6 +87,13 @@ class BplusTreeBranchNode<Key extends Comparable, Value> extends BplusTreeNode<K
 
         if (underOccupied())
             rebalance();
+
+        else if (idx == 0) {
+            if (parent != null)
+                parent.updateKeyOfNode(keys.peekFront(), LeftRangeKey);
+
+            LeftRangeKey = keys.peekFront();
+        }
     }
 
     void updateKeyOfNode(Key newKey, Key currKey) throws BTreeException {
@@ -142,6 +149,9 @@ class BplusTreeBranchNode<Key extends Comparable, Value> extends BplusTreeNode<K
         else {
             keys.removeFrom(idx);
             children.removeFrom(idx);
+
+            if (underOccupied())
+                rebalance();
         }
     }
 
