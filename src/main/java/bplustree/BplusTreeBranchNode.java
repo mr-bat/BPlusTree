@@ -61,6 +61,11 @@ class BplusTreeBranchNode<Key extends Comparable, Value> extends BplusTreeNode<K
             parent.removeNode(LeftRangeKey);
     }
 
+    @Override
+    public boolean isInRange(Key key) {
+        return key.compareTo(LeftRangeKey) > -1 && key.compareTo(keys.peekBack()) < 1;
+    }
+
     void addNode(BplusTreeNode child, Key key) throws BTreeException {
         int idx = searchLeftmostKey(keys, key, keys.size());
         if (idx >= 0)
@@ -70,8 +75,12 @@ class BplusTreeBranchNode<Key extends Comparable, Value> extends BplusTreeNode<K
         keys.insert(key, idx);
         children.insert(child, idx);
 
-        if (idx == 0)
+        if (idx == 0) {
+            if (parent != null)
+                parent.updateKeyOfNode(key, LeftRangeKey);
+
             LeftRangeKey = key;
+        }
         if (fullyOccupied())
             split();
     }
