@@ -71,7 +71,7 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
 
         int idx = searchLeftmostKey(keys, key, keys.size());
         if (idx >= 0)
-            throw new BTreeException("Can't add currently present key");
+            throw new BTreeException("Can't add currently present key " + key.toString());
 
         idx = -(idx + 1);
         if (idx == 0) {
@@ -95,7 +95,7 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
 
         int idx = searchLeftmostKey(keys, key, keys.size());
         if (idx < 0)
-            throw new BTreeException("Can't delete non-existent key");
+            throw new BTreeException("Can't delete non-existent key " + key.toString());
 
         keys.remove(idx);
         leaves.remove(idx);
