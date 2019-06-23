@@ -59,7 +59,6 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
      * the queue [a,b,c].
      */
     private transient int end = 0;
-    private transient int size = -1;
 
     /** Flag to indicate if the queue is currently full. */
     private transient boolean full = false;
@@ -160,9 +159,6 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
      */
     @Override 
     public int size() {
-        if (size != -1)
-            return size;
-
         int size = 0;
 
         if (end < start) {
@@ -173,7 +169,6 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
             size = end - start;
         }
 
-        this.size = size;
         return size;
     }
 
@@ -215,7 +210,6 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
         full = false;
         start = 0;
         end = 0;
-        size = 0;
 //        Arrays.fill(elements, null);
     }
 
@@ -283,7 +277,6 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
             full = true;
         }
 
-        ++size;
         return true;
     }
 
@@ -306,7 +299,6 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
             full = true;
         }
 
-        ++size;
         return true;
     }
 
@@ -347,7 +339,6 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
 
         full = false;
 
-        --size;
         return element;
     }
 
@@ -364,7 +355,6 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
 
         full = false;
 
-        --size;
         return element;
     }
 
@@ -393,7 +383,6 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
         }
         if (start == end)
             full = false;
-        --size;
     }
 
     public void removeFrom(int index) {
@@ -406,7 +395,6 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
         end = (start + index) % maxElements;
         if (start == end)
             full = false;
-        size = -1;
     }
 
     public void insert(E element, int index) {
@@ -443,7 +431,6 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
         if (end == start) {
             full = true;
         }
-        ++size;
     }
 
     public CircularFifoQueue<E> split() {
@@ -455,7 +442,6 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
         System.arraycopy(elements, 0, restElements, max((maxElements + 1) / 2 - start, 0), min((maxElements + 1) / 2, start));
         removeFrom(maxElements / 2);
 
-        size = -1;
         return new CircularFifoQueue(restElements, (maxElements+1)/2);
     }
 
@@ -527,7 +513,6 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
                 if (lastReturnedIndex == start) {
                     CircularFifoQueue.this.popFront();
                     lastReturnedIndex = -1;
-                    --size;
                     return;
                 }
 
@@ -553,7 +538,6 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
                 elements[end] = null;
                 full = false;
                 index = decrement(index);
-                --size;
             }
 
         };
