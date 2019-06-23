@@ -1,4 +1,4 @@
-package Utility;
+package utility;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -17,10 +17,6 @@ class CircularFifoQueueTest {
 
         for (int i = 0; i < 4; i++)
             queue.pushBack(i);
-    }
-
-    @AfterEach
-    void tearDown() {
     }
 
     @Test
@@ -171,7 +167,7 @@ class CircularFifoQueueTest {
         queue.popFront();
         queue.popFront();
 
-        Assertions.assertThrows(NullPointerException.class, () -> queue.insert(null, 1));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> queue.insert(null, 1));
         Assertions.assertThrows(NoSuchElementException.class, () -> queue.insert(-1, -1));
         Assertions.assertThrows(NoSuchElementException.class, () -> queue.insert(4, 4));
 
