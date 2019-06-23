@@ -118,11 +118,6 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
         if(underOccupied()) {
             rebalance();
         }
-        else if (idx == 0) {
-            if (parent != null)
-                parent.updateKeyOfNode(keys.peekFront(), LeftRangeKey);
-            LeftRangeKey = keys.peekFront();
-        }
     }
 
     @Override
@@ -177,11 +172,6 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
 
         if(underOccupied())
             rebalance();
-        else {
-            if (parent != null)
-                parent.updateKeyOfNode(keys.peekFront(), LeftRangeKey);
-            LeftRangeKey = keys.peekFront();
-        }
         return result;
     }
 }
