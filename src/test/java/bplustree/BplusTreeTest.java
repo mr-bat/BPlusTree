@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import utility.CircularFifoQueue;
 
 import java.lang.reflect.Field;
+import java.text.MessageFormat;
 
 import static java.lang.Math.min;
 
@@ -54,6 +55,7 @@ class BplusTreeTest {
     void shouldAdd() throws BTreeException {
         Assertions.assertThrows(BTreeException.class, () -> bplusTree.add(null, 0));
         Assertions.assertThrows(BTreeException.class, () -> bplusTree.add(0, 0));
+        System.out.println(MessageFormat.format("test finished with {0} hits and {1} misses", bplusTree.getHit(), bplusTree.getMiss()));
         shouldFind();
     }
 

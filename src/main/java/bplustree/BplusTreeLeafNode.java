@@ -9,6 +9,17 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
     private BplusTreeLeafNode next, prev;
     private BplusTree tree;
 
+    public int getDepth() {
+        BplusTreeNode node = this;
+        int depth = 1;
+        while (node.getParent() != null) {
+            ++depth;
+            node = node.getParent();
+        }
+
+        return depth;
+    }
+
     public BplusTreeLeafNode(BplusTreeLeafNode next, BplusTreeLeafNode prev, BplusTreeBranchNode parent, BplusTree tree) {
         this(new CircularFifoQueue<>(CAPACITY), new CircularFifoQueue<>(CAPACITY), next, prev, parent, tree);
     }
@@ -107,6 +118,11 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
         if(underOccupied()) {
             rebalance();
         }
+        else if (idx == 0) {
+            if (parent != null)
+                parent.updateKeyOfNode(keys.peekFront(), LeftRangeKey);
+            LeftRangeKey = keys.peekFront();
+        }
     }
 
     @Override
@@ -161,6 +177,11 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
 
         if(underOccupied())
             rebalance();
+        else {
+            if (parent != null)
+                parent.updateKeyOfNode(keys.peekFront(), LeftRangeKey);
+            LeftRangeKey = keys.peekFront();
+        }
         return result;
     }
 }

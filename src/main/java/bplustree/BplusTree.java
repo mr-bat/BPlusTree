@@ -3,6 +3,24 @@ package bplustree;
 public class BplusTree<Key extends Comparable<Key>, Value> {
     private BplusTreeNode<Key, Value> _root = new BplusTreeLeafNode<Key, Value>(null, null, null, this);
     private BplusTreeLeafNode recentlyUsed;
+    private int hit = 0, miss = 0;
+
+    public BplusTreeBranchNode getRecentNode() {
+        if (recentlyUsed != null && recentlyUsed.getParent() != null && recentlyUsed.getParent().getParent() != null)
+            return recentlyUsed.getParent().getParent();
+        return null;
+    }
+    public int getHit() {
+        return hit;
+    }
+
+    public int getMiss() {
+        return miss;
+    }
+
+    public int getSampleDepth() {
+        return recentlyUsed == null ? -1 : recentlyUsed.getDepth();
+    }
 
     protected void setRecentlyUsed(BplusTreeLeafNode recentlyUsed) {
         this.recentlyUsed = recentlyUsed;
@@ -13,17 +31,20 @@ public class BplusTree<Key extends Comparable<Key>, Value> {
     }
 
     public void add(Key key, Value value) throws BTreeException {
-        if (recentlyUsed != null && recentlyUsed.getParent() != null && recentlyUsed.getParent().isInRange(key))
-            recentlyUsed.getParent().add(key, value);
-        else
+        if (getRecentNode() != null && getRecentNode().isInRange(key)) {
+            ++hit;
+            getRecentNode().add(key, value);
+        } else {
             _root.add(key, value);
+            ++miss;
+        }
 
         if (_root.getParent() != null)
             _root = _root.getParent();
     }
     public void remove(Key key) throws BTreeException {
-        if (recentlyUsed != null && recentlyUsed.getParent() != null && recentlyUsed.getParent().isInRange(key))
-            recentlyUsed.getParent().remove(key);
+        if (getRecentNode() != null && getRecentNode().isInRange(key))
+            getRecentNode().remove(key);
         else
             _root.remove(key);
 
@@ -39,8 +60,8 @@ public class BplusTree<Key extends Comparable<Key>, Value> {
         }
     }
     public Value find(Key key) throws BTreeException {
-        if (recentlyUsed != null && recentlyUsed.getParent() != null && recentlyUsed.getParent().isInRange(key))
-            return (Value) recentlyUsed.getParent().find(key);
+        if (getRecentNode() != null && getRecentNode().isInRange(key))
+            return (Value) getRecentNode().find(key);
         else
             return _root.find(key);
     }
