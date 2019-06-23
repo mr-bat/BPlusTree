@@ -11,7 +11,7 @@ class BplusTreeTest {
 
     @org.junit.jupiter.api.BeforeEach
     void setUp() throws BTreeException {
-        bplusTree = new BplusTree<Integer, Integer>();
+        bplusTree = new BplusTree<>();
         for (int i = 1; i < MAXN; i++) {
             bplusTree.add(i, 2 * i);
         }
