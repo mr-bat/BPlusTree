@@ -1,7 +1,12 @@
 package bplustree;
 
 public class BplusTree<Key extends Comparable<Key>, Value> {
-    private BplusTreeNode<Key, Value> _root = new BplusTreeLeafNode<Key, Value>(null, null, null);
+    private BplusTreeNode<Key, Value> _root = new BplusTreeLeafNode<Key, Value>(null, null, null, this);
+    private BplusTreeLeafNode recentlyUsed;
+
+    protected void setRecentlyUsed(BplusTreeLeafNode recentlyUsed) {
+        this.recentlyUsed = recentlyUsed;
+    }
 
     public boolean isEmpty() {
         return _root.isEmpty();
@@ -17,13 +22,13 @@ public class BplusTree<Key extends Comparable<Key>, Value> {
         _root.remove(key);
 
         if (_root.isEmpty())
-            _root = new BplusTreeLeafNode<Key, Value>(null, null, null);
+            _root = new BplusTreeLeafNode<Key, Value>(null, null, null, this);
     }
     public void removeFrom(Key key) throws BTreeException {
         _root.removeFrom(key);
 
         if (_root.isEmpty())
-            _root = new BplusTreeLeafNode<Key, Value>(null, null, null);
+            _root = new BplusTreeLeafNode<Key, Value>(null, null, null, this);
     }
     public Value find(Key key) throws BTreeException {
         return _root.find(key);
@@ -37,7 +42,7 @@ public class BplusTree<Key extends Comparable<Key>, Value> {
     public Value pop() throws BTreeException {
         Value poppedVal = _root.pop();
         if (_root.isEmpty())
-            _root = new BplusTreeLeafNode<Key, Value>(null, null, null);
+            _root = new BplusTreeLeafNode<Key, Value>(null, null, null, this);
 
         return poppedVal;
     }
