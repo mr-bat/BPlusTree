@@ -6,9 +6,7 @@ import static utility.Utils.searchLeftmostKey;
 import static utility.Utils.searchRightmostKey;
 
 class BplusTreeBranchNode<Key extends Comparable, Value> extends BplusTreeNode<Key, Value>{
-    private CircularFifoQueue<Key> keys;
     private CircularFifoQueue<BplusTreeNode<Key, Value>> children;
-    private Key LeftRangeKey;
 
     public BplusTreeBranchNode(BplusTreeBranchNode parent) {
         this(new CircularFifoQueue<>(CAPACITY), new CircularFifoQueue<>(CAPACITY), parent);
@@ -59,11 +57,6 @@ class BplusTreeBranchNode<Key extends Comparable, Value> extends BplusTreeNode<K
     protected void rebalance() throws BTreeException {
         if (parent != null)
             parent.removeNode(LeftRangeKey);
-    }
-
-    @Override
-    public boolean isInRange(Key key) {
-        return key.compareTo(LeftRangeKey) > -1 && key.compareTo(keys.peekBack()) < 1;
     }
 
     void addNode(BplusTreeNode child, Key key) throws BTreeException {

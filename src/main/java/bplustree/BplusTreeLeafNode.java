@@ -5,11 +5,9 @@ import utility.CircularFifoQueue;
 import static utility.Utils.searchLeftmostKey;
 
 class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNode<Key, Value> {
-    private CircularFifoQueue<Key> keys;
     private CircularFifoQueue<Value> leaves;
     private BplusTreeLeafNode next, prev;
     private BplusTree tree;
-    private Key LeftRangeKey;
 
     public BplusTreeLeafNode(BplusTreeLeafNode next, BplusTreeLeafNode prev, BplusTreeBranchNode parent, BplusTree tree) {
         this(new CircularFifoQueue<>(CAPACITY), new CircularFifoQueue<>(CAPACITY), next, prev, parent, tree);
@@ -65,11 +63,6 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
 
         if (parent != null)
             parent.removeNode(LeftRangeKey);
-    }
-
-    @Override
-    public boolean isInRange(Key key) {
-        return key.compareTo(LeftRangeKey) > -1 && key.compareTo(keys.peekBack()) < 1;
     }
 
     @Override
