@@ -10,12 +10,14 @@ import org.openjdk.jmh.runner.options.Options;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.concurrent.ThreadLocalRandom;
 
 @State(Scope.Thread)
 public class AddNodeToBtreeBenchmark extends AbstractBenchmark {
     private static final int InitialSize = 35 * 1000, Period = 3500;
     private BplusTree<Integer, Integer> bplusTree;
     private ArrayList<Integer> list;
+    private int occCounter[];
     private int indexIterator, periodCounter = 1, listIndex = 0;
 
     @Override
@@ -36,6 +38,7 @@ public class AddNodeToBtreeBenchmark extends AbstractBenchmark {
         indexIterator = InitialSize * Period;
         bplusTree = new BplusTree<>();
         list = new ArrayList<>();
+        occCounter = new int[InitialSize];
 
         for (int i = 0; i < InitialSize; i++) {
             bplusTree.add(i * Period, i * Period);
@@ -53,7 +56,7 @@ public class AddNodeToBtreeBenchmark extends AbstractBenchmark {
     int getPrevIndex() {
         return -indexIterator++;
     }
-    int getNextRandomIndex() {
+    int getNextRandPermutationIndex() {
         if (listIndex == InitialSize) {
             listIndex = 0;
             periodCounter++;
@@ -61,22 +64,33 @@ public class AddNodeToBtreeBenchmark extends AbstractBenchmark {
 
         return list.get(listIndex++) * Period + periodCounter;
     }
+    int getNextRandIndex() {
+        int index = ThreadLocalRandom.current().nextInt(0, InitialSize);
+
+        return index * Period + ++occCounter[index];
+    }
 
     @Benchmark
-    public void addNodeToBtree() throws BTreeException {
+    public void addNodeInIncrement() throws BTreeException {
         Integer currIndex = getNextIndex();
         bplusTree.add(currIndex, currIndex);
     }
 
     @Benchmark
-    public void addNodeToBtreeInReverse() throws BTreeException {
+    public void addNodeInDecrement() throws BTreeException {
         Integer currIndex = getPrevIndex();
         bplusTree.add(currIndex, currIndex);
     }
 
     @Benchmark
-    public void addNodeToBtreeRandomly() throws BTreeException {
-        Integer currIndex = getNextRandomIndex();
+    public void addNodeRandomPermutation() throws BTreeException {
+        Integer currIndex = getNextRandPermutationIndex();
+        bplusTree.add(currIndex, currIndex);
+    }
+
+    @Benchmark
+    public void addNodeRandom() throws BTreeException {
+        Integer currIndex = getNextRandIndex();
         bplusTree.add(currIndex, currIndex);
     }
 }
