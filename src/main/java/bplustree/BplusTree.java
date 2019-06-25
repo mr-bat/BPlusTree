@@ -4,10 +4,25 @@ public class BplusTree<Key extends Comparable<Key>, Value> {
     private BplusTreeNode<Key, Value> _root = new BplusTreeLeafNode<Key, Value>(null, null, null, this);
     private BplusTreeLeafNode recentlyUsed;
     private int hit = 0, miss = 0;
+    private boolean cacheDisabled = false;
+
+    public BplusTree() {
+        this(false);
+    }
+
+    public BplusTree(boolean cacheDisabled) {
+        this.cacheDisabled = cacheDisabled;
+    }
+
+    public boolean cacheEnabled() {
+        return !cacheDisabled;
+    }
 
     public BplusTreeBranchNode getRecentNode() {
-        if (recentlyUsed != null && recentlyUsed.getParent() != null && recentlyUsed.getParent().getParent() != null)
-            return recentlyUsed.getParent().getParent();
+        if (cacheDisabled)
+            return null;
+        if (recentlyUsed != null && recentlyUsed.getParent() != null)
+            return recentlyUsed.getParent();
         return null;
     }
     public int getHit() {

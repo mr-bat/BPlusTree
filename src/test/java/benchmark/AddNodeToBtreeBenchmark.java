@@ -11,9 +11,9 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @State(Scope.Thread)
 public class AddNodeToBtreeBenchmark extends AbstractBenchmark {
-    private static final int InitialSize = 35 * 1000, Period = 3500;
+    private static final int InitialSize = 35 * 1000, Period = 3500, MaxBatch = 1000 * 1000;
     private BplusTree<Integer, Integer> bplusTree;
-    private ArrayList<Integer> list;
+    private ArrayList<Integer> list, randomShuffled;
     private int occCounter[];
     private int indexIterator, periodCounter = 1, listIndex = 0;
 
@@ -35,6 +35,7 @@ public class AddNodeToBtreeBenchmark extends AbstractBenchmark {
         indexIterator = InitialSize * Period;
         bplusTree = new BplusTree<>();
         list = new ArrayList<>();
+        randomShuffled = new ArrayList<>();
         occCounter = new int[InitialSize];
 
         for (int i = 0; i < InitialSize; i++) {
@@ -42,6 +43,9 @@ public class AddNodeToBtreeBenchmark extends AbstractBenchmark {
             list.add(i);
         }
         java.util.Collections.shuffle(list);
+
+        for (int i = 0; i < MaxBatch; i++) randomShuffled.add(i);
+        java.util.Collections.shuffle(randomShuffled);
 
         long endTime = System.nanoTime();
         System.out.println(MessageFormat.format("Initialized @ {0}ns", endTime - startTime));
@@ -90,6 +94,31 @@ public class AddNodeToBtreeBenchmark extends AbstractBenchmark {
         Integer currIndex = getNextRandIndex();
         bplusTree.add(currIndex, currIndex);
     }
+
+    @Benchmark
+    public void addBatch1k() throws BTreeException {
+        bplusTree.removeFrom(0);
+
+        for (int i = 0; i < 1000; i++)
+            bplusTree.add(randomShuffled.get(i), i);
+    }
+
+    @Benchmark
+    public void addBatch100k() throws BTreeException {
+        bplusTree.removeFrom(0);
+
+        for (int i = 0; i < 100 * 1000; i++)
+            bplusTree.add(randomShuffled.get(i), i);
+    }
+
+    @Benchmark
+    public void addBatch1m() throws BTreeException {
+        bplusTree.removeFrom(0);
+
+        for (int i = 0; i < 1000 * 1000; i++)
+            bplusTree.add(randomShuffled.get(i), i);
+    }
+
 
     @TearDown
     public void tearDown() {
