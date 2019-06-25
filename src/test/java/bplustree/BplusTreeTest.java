@@ -1,6 +1,10 @@
 package bplustree;
 
 import org.junit.jupiter.api.Assertions;
+import utility.CircularFifoQueue;
+
+import java.lang.reflect.Field;
+import java.text.MessageFormat;
 
 import static java.lang.Math.min;
 
@@ -19,6 +23,23 @@ class BplusTreeTest {
     }
 
     @org.junit.jupiter.api.Test
+    void shouldBeInRange() throws NoSuchFieldException, IllegalAccessException, BTreeException {
+        Field _root = BplusTree.class.getDeclaredField("_root");
+        _root.setAccessible(true);
+        Field keys = BplusTreeNode.class.getDeclaredField("keys");
+        keys.setAccessible(true);
+        Field children = BplusTreeBranchNode.class.getDeclaredField("children");
+        children.setAccessible(true);
+        BplusTreeBranchNode node = (BplusTreeBranchNode) ((CircularFifoQueue<BplusTreeNode>) children.get(_root.get(bplusTree))).peekFront();
+        CircularFifoQueue<Integer> queue = (CircularFifoQueue) keys.get(node);
+
+        Assertions.assertTrue(node.isInRange(queue.peekFront()));
+        Assertions.assertTrue(node.isInRange(queue.peekBack()));
+        Assertions.assertFalse(node.isInRange(queue.peekFront() - 1));
+        Assertions.assertFalse(node.isInRange(queue.peekBack() + 1));
+    }
+
+    @org.junit.jupiter.api.Test
     void shouldBeEmpty() throws BTreeException {
         bplusTree.removeFrom(0);
         Assertions.assertTrue(bplusTree.isEmpty());
@@ -34,6 +55,7 @@ class BplusTreeTest {
     void shouldAdd() throws BTreeException {
         Assertions.assertThrows(BTreeException.class, () -> bplusTree.add(null, 0));
         Assertions.assertThrows(BTreeException.class, () -> bplusTree.add(0, 0));
+        System.out.println(MessageFormat.format("test finished with {0} hits and {1} misses", bplusTree.getHit(), bplusTree.getMiss()));
         shouldFind();
     }
 
@@ -194,5 +216,103 @@ class BplusTreeTest {
             Assertions.assertNotEquals(2 * i, bplusTree.peekValue());
             Assertions.assertNotEquals(i, bplusTree.peekKey());
         }
+    }
+
+    @org.junit.jupiter.api.Test
+    void shouldDisableCache() throws BTreeException {
+        bplusTree = new BplusTree<>(true);
+        Assertions.assertFalse(bplusTree.cacheEnabled());
+        bplusTree.find(0);
+        int initialHit = bplusTree.getHit();
+        int initialMiss = bplusTree.getMiss();
+
+        bplusTree.find(0);
+        Assertions.assertEquals(0, bplusTree.getHit() - initialHit);
+        Assertions.assertEquals(1, bplusTree.getMiss() - initialMiss);
+    }
+
+    @org.junit.jupiter.api.Test
+    void shouldCacheHitFind() throws BTreeException {
+        if (bplusTree.cacheEnabled()) {
+            bplusTree.find(0);
+            int initialHit = bplusTree.getHit();
+            int initialMiss = bplusTree.getMiss();
+
+            bplusTree.find(0);
+            Assertions.assertEquals(1, bplusTree.getHit() - initialHit);
+            Assertions.assertEquals(0, bplusTree.getMiss() - initialMiss);
+        }
+    }
+
+    @org.junit.jupiter.api.Test
+    void shouldCacheMissFind() throws BTreeException {
+        if (bplusTree.cacheEnabled()) {
+            bplusTree.find(0);
+            int initialHit = bplusTree.getHit();
+            int initialMiss = bplusTree.getMiss();
+
+            bplusTree.find(MAXN - 1);
+            Assertions.assertEquals(0, bplusTree.getHit() - initialHit);
+            Assertions.assertEquals(1, bplusTree.getMiss() - initialMiss);
+        }
+    }
+
+    @org.junit.jupiter.api.Test
+    void shouldCacheHitRemove() throws BTreeException {
+        if (bplusTree.cacheEnabled()) {
+            bplusTree.remove(1);
+            int initialHit = bplusTree.getHit();
+            int initialMiss = bplusTree.getMiss();
+
+            bplusTree.remove(0);
+            Assertions.assertEquals(1, bplusTree.getHit() - initialHit);
+            Assertions.assertEquals(0, bplusTree.getMiss() - initialMiss);
+        }
+    }
+
+    @org.junit.jupiter.api.Test
+    void shouldCacheMissRemove() throws BTreeException {
+        if (bplusTree.cacheEnabled()) {
+            bplusTree.remove(1);
+            int initialHit = bplusTree.getHit();
+            int initialMiss = bplusTree.getMiss();
+
+            bplusTree.remove(MAXN - 1);
+            Assertions.assertEquals(0, bplusTree.getHit() - initialHit);
+            Assertions.assertEquals(1, bplusTree.getMiss() - initialMiss);
+        }
+    }
+
+    @org.junit.jupiter.api.Test
+    void shouldCacheHitAdd() throws BTreeException {
+        if (bplusTree.cacheEnabled()) {
+            bplusTree.add(-2, -2);
+            int initialHit = bplusTree.getHit();
+            int initialMiss = bplusTree.getMiss();
+
+            bplusTree.add(-1, -1);
+            Assertions.assertEquals(1, bplusTree.getHit() - initialHit);
+            Assertions.assertEquals(0, bplusTree.getMiss() - initialMiss);
+        }
+    }
+
+    @org.junit.jupiter.api.Test
+    void shouldCacheMissAdd() throws BTreeException {
+        if (bplusTree.cacheEnabled()) {
+            bplusTree.add(MAXN, MAXN);
+            int initialHit = bplusTree.getHit();
+            int initialMiss = bplusTree.getMiss();
+
+            bplusTree.add(-1, -1);
+            Assertions.assertEquals(0, bplusTree.getHit() - initialHit);
+            Assertions.assertEquals(1, bplusTree.getMiss() - initialMiss);
+        }
+    }
+
+    @org.junit.jupiter.api.Test
+    void shouldCheckSampleDepth() {
+        Assertions.assertEquals(3, bplusTree.getSampleDepth());
+        bplusTree = new BplusTree<>();
+        Assertions.assertEquals(-1, bplusTree.getSampleDepth());
     }
 }

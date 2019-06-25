@@ -6,9 +6,7 @@ import static utility.Utils.searchLeftmostKey;
 import static utility.Utils.searchRightmostKey;
 
 class BplusTreeBranchNode<Key extends Comparable, Value> extends BplusTreeNode<Key, Value>{
-    private CircularFifoQueue<Key> keys;
     private CircularFifoQueue<BplusTreeNode<Key, Value>> children;
-    private Key LeftRangeKey;
 
     public BplusTreeBranchNode(BplusTreeBranchNode parent) {
         this(new CircularFifoQueue<>(CAPACITY), new CircularFifoQueue<>(CAPACITY), parent);
@@ -70,8 +68,12 @@ class BplusTreeBranchNode<Key extends Comparable, Value> extends BplusTreeNode<K
         keys.insert(key, idx);
         children.insert(child, idx);
 
-        if (idx == 0)
+        if (idx == 0) {
+            if (parent != null)
+                parent.updateKeyOfNode(key, LeftRangeKey);
+
             LeftRangeKey = key;
+        }
         if (fullyOccupied())
             split();
     }
@@ -140,6 +142,9 @@ class BplusTreeBranchNode<Key extends Comparable, Value> extends BplusTreeNode<K
         else {
             keys.removeFrom(idx);
             children.removeFrom(idx);
+
+            if (underOccupied())
+                rebalance();
         }
     }
 
