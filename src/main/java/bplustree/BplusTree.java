@@ -43,10 +43,13 @@ public class BplusTree<Key extends Comparable<Key>, Value> {
             _root = _root.getParent();
     }
     public void remove(Key key) throws BTreeException {
-        if (getRecentNode() != null && getRecentNode().isInRange(key))
+        if (getRecentNode() != null && getRecentNode().isInRange(key)) {
             getRecentNode().remove(key);
-        else
+            ++hit;
+        } else {
             _root.remove(key);
+            ++miss;
+        }
 
         if (_root.isEmpty())
             _root = new BplusTreeLeafNode<Key, Value>(null, null, null, this);
@@ -60,10 +63,13 @@ public class BplusTree<Key extends Comparable<Key>, Value> {
         }
     }
     public Value find(Key key) throws BTreeException {
-        if (getRecentNode() != null && getRecentNode().isInRange(key))
+        if (getRecentNode() != null && getRecentNode().isInRange(key)) {
+            ++hit;
             return (Value) getRecentNode().find(key);
-        else
+        } else {
+            ++miss;
             return _root.find(key);
+        }
     }
     public Value peekValue() {
         return _root.peekValue();
