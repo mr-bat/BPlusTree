@@ -1,6 +1,5 @@
 package utility;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -119,6 +118,24 @@ class CircularFifoQueueTest {
     }
 
     @Test
+    void removeAndSwapBackwards() {
+        queue.remove(1);
+
+        Assertions.assertEquals(Integer.valueOf(0), queue.get(0));
+        Assertions.assertEquals(Integer.valueOf(2), queue.get(1));
+        Assertions.assertEquals(Integer.valueOf(3), queue.get(2));
+    }
+
+    @Test
+    void removeAndSwapForwards() {
+        queue.remove(2);
+
+        Assertions.assertEquals(Integer.valueOf(0), queue.get(0));
+        Assertions.assertEquals(Integer.valueOf(1), queue.get(1));
+        Assertions.assertEquals(Integer.valueOf(3), queue.get(2));
+    }
+
+    @Test
     void removeCircular() {
         queue.popFront();
         queue.pushBack(4);
@@ -184,14 +201,28 @@ class CircularFifoQueueTest {
     }
 
     @Test
+    void insertAndSwapBackwards() {
+        queue = new CircularFifoQueue<>(new Integer[]{0, 1, 3, 4, 5, 7}, 5);
+        queue.insert(2, 2);
+        get();
+    }
+
+    @Test
+    void insertAndSwapForwards() {
+        queue = new CircularFifoQueue<>(new Integer[]{0, 1, 3, 4}, 3);
+        queue.insert(2, 2);
+        get();
+    }
+
+    @Test
     void get() {
         Assertions.assertThrows(NoSuchElementException.class, () -> queue.get(-1));
-        Assertions.assertThrows(NoSuchElementException.class, () -> queue.get(4));
+        Assertions.assertThrows(NoSuchElementException.class, () -> queue.get(queue.maxSize()));
 
-        for (int i = 0; i < 4; i++) {
-            Assertions.assertEquals(4, queue.size());
+        for (int i = 0; i < queue.maxSize(); i++) {
             Assertions.assertEquals(Integer.valueOf(i), queue.get(i));
         }
+        Assertions.assertEquals(queue.maxSize(), queue.size());
     }
 
     @Test
@@ -222,7 +253,7 @@ class CircularFifoQueueTest {
     }
 
     @Test
-    void splitEvenSizeCircular() {
+    void splitEvenSizeCircularFromBeginning() {
         queue.popFront();
         queue.pushBack(4);
         CircularFifoQueue<Integer> secondHalf = queue.split();
@@ -234,6 +265,23 @@ class CircularFifoQueueTest {
         Assertions.assertEquals(2, secondHalf.size());
         for (int i = 0; i < 2; i++)
             Assertions.assertEquals(Integer.valueOf(i + 3), secondHalf.get(i));
+
+        Assertions.assertThrows(IllegalStateException.class, () -> queue.split());
+    }
+
+    @Test
+    void splitEvenSizeCircularFromEnd() {
+        queue.popBack();
+        queue.pushFront(-1);
+        CircularFifoQueue<Integer> secondHalf = queue.split();
+
+        Assertions.assertEquals(2, queue.size());
+        for (int i = 0; i < 2; i++)
+            Assertions.assertEquals(Integer.valueOf(i - 1), queue.get(i));
+
+        Assertions.assertEquals(2, secondHalf.size());
+        for (int i = 0; i < 2; i++)
+            Assertions.assertEquals(Integer.valueOf(i + 1), secondHalf.get(i));
 
         Assertions.assertThrows(IllegalStateException.class, () -> queue.split());
     }
@@ -258,7 +306,7 @@ class CircularFifoQueueTest {
     }
 
     @Test
-    void splitOddSizeCircular() {
+    void splitOddSizeCircularFromBeginning() {
         queue = new CircularFifoQueue<>(5);
         for (int i = 0; i < 5; i++)
             queue.pushBack(i);
@@ -274,6 +322,27 @@ class CircularFifoQueueTest {
         Assertions.assertEquals(3, secondHalf.size());
         for (int i = 0; i < 3; i++)
             Assertions.assertEquals(Integer.valueOf(i + 3), secondHalf.get(i));
+
+        Assertions.assertThrows(IllegalStateException.class, () -> queue.split());
+    }
+
+    @Test
+    void splitOddSizeCircularFromEnd() {
+        queue = new CircularFifoQueue<>(5);
+        for (int i = 0; i < 5; i++)
+            queue.pushBack(i);
+        queue.popBack();
+        queue.pushFront(-1);
+
+        CircularFifoQueue<Integer> secondHalf = queue.split();
+
+        Assertions.assertEquals(2, queue.size());
+        for (int i = 0; i < 2; i++)
+            Assertions.assertEquals(Integer.valueOf(i - 1), queue.get(i));
+
+        Assertions.assertEquals(3, secondHalf.size());
+        for (int i = 0; i < 3; i++)
+            Assertions.assertEquals(Integer.valueOf(i + 1), secondHalf.get(i));
 
         Assertions.assertThrows(IllegalStateException.class, () -> queue.split());
     }

@@ -330,7 +330,6 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
         }
 
         final E element = elements[start];
-//        elements[start] = null;
         start++;
 
         if (start >= maxElements) {
@@ -351,35 +350,41 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
             end = maxElements - 1;
 
         final E element = elements[end];
-//        elements[end] = null;
 
         full = false;
 
         return element;
     }
 
-    public void remove(int index) {
+    public void remove(int _index) {
         final int sz = size();
-        if (index < 0 || index >= sz) {
+        if (_index < 0 || _index >= sz) {
             throw new NoSuchElementException(
                     String.format("The specified index (%1$d) is outside the available range [0, %2$d)",
-                            Integer.valueOf(index), Integer.valueOf(sz)));
+                            Integer.valueOf(_index), Integer.valueOf(sz)));
         }
 
-        index = (start + index) % maxElements;
-        --end;
-        if (end < 0)
-            end = maxElements - 1;
+        int index = (start + _index) % maxElements;
 
-        E next = elements[increment(index)];
+        if (sz - _index <= _index) {
+            end = decrement(end);
 
-        while (index != end) {
-            elements[index] = next;
+            E next = elements[increment(index)];
 
-            if (++index == maxElements)
-                index = 0;
+            while (index != end) {
+                elements[index] = next;
+                index = increment(index);
+                next = elements[increment(index)];
+            }
+        } else {
+            E next = elements[decrement(index)];
 
-            next = elements[increment(index)];
+            while (index != start) {
+                elements[index] = next;
+                index = decrement(index);
+                next = elements[decrement(index)];
+            }
+            start = increment(start);
         }
         if (start == end)
             full = false;
@@ -397,12 +402,12 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
             full = false;
     }
 
-    public void insert(E element, int index) {
+    public void insert(E element, int _index) {
         final int sz = size();
-        if (index < 0 || index > sz) {
+        if (_index < 0 || _index > sz) {
             throw new NoSuchElementException(
                     String.format("The specified index (%1$d) is outside the available range [0, %2$d)",
-                            Integer.valueOf(index), Integer.valueOf(sz)));
+                            Integer.valueOf(_index), Integer.valueOf(sz)));
         }
 
         if (null == element) {
@@ -413,20 +418,39 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
             throw new IllegalStateException("Object is currently full");
         }
 
-        index = (start + index) % maxElements;
+        int index = (start + _index) % maxElements;
 
-        while (index != end) {
-            E curr;
+        if (sz - _index <= _index) {
+            while (index != end) {
+                E curr;
 
-            curr = elements[index];
-            elements[index] = element;
-            element = curr;
+                curr = elements[index];
+                elements[index] = element;
+                element = curr;
 
-            if (++index == maxElements)
-                index = 0;
+                index = increment(index);
+            }
+            elements[end] = element;
+            end = increment(end);
+        } else {
+            if (index != start) {
+                index = decrement(index);
+                E curr;
+                while (index != start) {
+                    curr = elements[index];
+                    elements[index] = element;
+                    element = curr;
+
+                    index = decrement(index);
+                }
+                curr = elements[index];
+                elements[index] = element;
+                element = curr;
+            }
+
+            start = decrement(start);
+            elements[start] = element;
         }
-
-        elements[end++] = element;
 
         if (end == start) {
             full = true;
@@ -435,11 +459,14 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
 
     public CircularFifoQueue<E> split() {
         if (!isAtFullCapacity())
-            throw new IllegalStateException("CircularFifoQueue should be full");
+            throw new IllegalStateException("CircularFifoQueue should be full before split");
 
         E[] restElements = (E[]) Array.newInstance(elements.getClass().getComponentType(), maxElements);
-        System.arraycopy(elements, start + (maxElements / 2), restElements, 0, max((maxElements + 1) / 2 - start, 0));
-        System.arraycopy(elements, 0, restElements, max((maxElements + 1) / 2 - start, 0), min((maxElements + 1) / 2, start));
+        int midIndex = start + (maxElements / 2);
+        int restLength = (maxElements + 1) / 2;
+        if (midIndex < maxElements)
+            System.arraycopy(elements, midIndex, restElements, 0, max(restLength - start, 0));
+        System.arraycopy(elements, max((maxElements - restLength) - maxElements + start, 0), restElements, max(restLength - start, 0), min(restLength, start));
         removeFrom(maxElements / 2);
 
         return new CircularFifoQueue(restElements, (maxElements+1)/2);
