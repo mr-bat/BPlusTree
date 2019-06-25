@@ -22,7 +22,7 @@ public class BplusTree<Key extends Comparable<Key>, Value> {
         if (cacheDisabled)
             return null;
         if (recentlyUsed != null && recentlyUsed.getParent() != null)
-            return recentlyUsed.getParent();
+            return recentlyUsed.getParent().getParent();
         return null;
     }
     public int getHit() {
