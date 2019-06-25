@@ -160,6 +160,11 @@ class BplusTreeBranchNode<Key extends Comparable, Value> extends BplusTreeNode<K
     }
 
     @Override
+    public BplusTreeLeafNode.BplusTreeIterator peekLast() {
+        return children.peekBack().peekLast();
+    }
+
+    @Override
     public Key peekKey() {
         return children.get(0).peekKey();
     }

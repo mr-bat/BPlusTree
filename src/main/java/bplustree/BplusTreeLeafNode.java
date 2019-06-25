@@ -9,6 +9,10 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
     private BplusTreeLeafNode next, prev;
     private BplusTree tree;
 
+    public BplusTreeLeafNode getPrev() {
+        return prev;
+    }
+
     public int getDepth() {
         BplusTreeNode node = this;
         int depth = 1;
@@ -152,6 +156,11 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
         }
     }
 
+    @Override
+    public BplusTreeIterator peekLast() {
+        return new BplusTreeIterator(this, keys.size() - 1);
+    }
+
 
     @Override
     public Key peekKey() {
@@ -174,4 +183,41 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
             rebalance();
         return result;
     }
+
+    public class BplusTreeIterator implements Iterator{
+        private BplusTreeLeafNode<Key, Value> node;
+        private int index;
+
+        public BplusTreeIterator(BplusTreeLeafNode<Key, Value> node, int index) {
+            this.node = node;
+            this.index = index;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return index > 0 || node.getPrev() != null;
+        }
+
+        @Override
+        public void goToNext() {
+            if (index - 1 >= 0)
+                --index;
+            else {
+                node = node.getPrev();
+                index = node.keys.size() - 1;
+            }
+        }
+
+        @Override
+        public Key getKey() {
+            return node.keys.get(index);
+        }
+
+        @Override
+        public Value getValue() {
+            return node.leaves.get(index);
+        }
+
+    }
+
 }
