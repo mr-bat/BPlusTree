@@ -1,8 +1,8 @@
 package bplustree;
 
-public interface Iterator<Key extends Comparable<Key>, Value> {
+public interface Iterator<K extends Comparable<K>, V> {
     public boolean hasNext();
     public void goToNext();
-    public Key getKey();
-    public Value getValue();
+    public K getKey();
+    public V getValue();
 }
