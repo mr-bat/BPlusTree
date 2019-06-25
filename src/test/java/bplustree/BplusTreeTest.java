@@ -1,6 +1,7 @@
 package bplustree;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import utility.CircularFifoQueue;
 
 import java.lang.reflect.Field;
@@ -314,5 +315,21 @@ class BplusTreeTest {
         Assertions.assertEquals(3, bplusTree.getSampleDepth());
         bplusTree = new BplusTree<>();
         Assertions.assertEquals(-1, bplusTree.getSampleDepth());
+    }
+
+    @Test
+    void peekLast() {
+        BplusTreeLeafNode.BplusTreeIterator iterator = bplusTree.peekLast();
+
+        for (int i = MAXN - 1; i > 0; i--) {
+            Assertions.assertEquals(i, iterator.getKey());
+            Assertions.assertEquals(2 * i, iterator.getValue());
+            Assertions.assertTrue(iterator.hasNext());
+            iterator.goToNext();
+        }
+
+        Assertions.assertEquals(0, iterator.getKey());
+        Assertions.assertEquals(0, iterator.getValue());
+        Assertions.assertFalse(iterator.hasNext());
     }
 }

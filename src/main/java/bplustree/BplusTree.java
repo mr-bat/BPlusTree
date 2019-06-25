@@ -89,6 +89,9 @@ public class BplusTree<Key extends Comparable<Key>, Value> {
             return _root.find(key);
         }
     }
+    public BplusTreeLeafNode.BplusTreeIterator peekLast() {
+        return _root.peekLast();
+    }
     public Value peekValue() {
         return _root.peekValue();
     }
