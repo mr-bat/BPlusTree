@@ -219,6 +219,19 @@ class BplusTreeTest {
     }
 
     @org.junit.jupiter.api.Test
+    void shouldDisableCache() throws BTreeException {
+        bplusTree = new BplusTree<>(true);
+        Assertions.assertFalse(bplusTree.cacheEnabled());
+        bplusTree.find(0);
+        int initialHit = bplusTree.getHit();
+        int initialMiss = bplusTree.getMiss();
+
+        bplusTree.find(0);
+        Assertions.assertEquals(0, bplusTree.getHit() - initialHit);
+        Assertions.assertEquals(1, bplusTree.getMiss() - initialMiss);
+    }
+
+    @org.junit.jupiter.api.Test
     void shouldCacheHitFind() throws BTreeException {
         if (bplusTree.cacheEnabled()) {
             bplusTree.find(0);
@@ -299,5 +312,7 @@ class BplusTreeTest {
     @org.junit.jupiter.api.Test
     void shouldCheckSampleDepth() {
         Assertions.assertEquals(3, bplusTree.getSampleDepth());
+        bplusTree = new BplusTree<>();
+        Assertions.assertEquals(-1, bplusTree.getSampleDepth());
     }
 }

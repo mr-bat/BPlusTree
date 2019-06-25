@@ -1,5 +1,7 @@
 package bplustree;
 
+import com.google.common.annotations.Beta;
+
 public class BplusTree<Key extends Comparable<Key>, Value> {
     private BplusTreeNode<Key, Value> _root = new BplusTreeLeafNode<Key, Value>(null, null, null, this);
     private BplusTreeLeafNode recentlyUsed;
@@ -33,6 +35,7 @@ public class BplusTree<Key extends Comparable<Key>, Value> {
         return miss;
     }
 
+    @Beta
     public int getSampleDepth() {
         return recentlyUsed == null ? -1 : recentlyUsed.getDepth();
     }
