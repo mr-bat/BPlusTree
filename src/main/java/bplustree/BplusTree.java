@@ -142,4 +142,11 @@ public class BplusTree<Key extends Comparable<Key>, Value> {
 
         return poppedVal;
     }
+    public Value poll() throws BTreeException {
+        return popBack();
+    }
+    @Beta
+    public Value peek() {
+        return peekLastValue();
+    }
 }
