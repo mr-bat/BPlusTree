@@ -31,8 +31,10 @@ abstract class BplusTreeNode<Key extends Comparable, Value> {
     public abstract void removeFrom(Key searchKey) throws BTreeException;
     public abstract Value find(Key searchKey) throws BTreeException;
     public abstract BplusTreeLeafNode.BplusTreeIterator peekLast();
+    public abstract BplusTreeLeafNode peekLastNode();
     public abstract Key peekKey();
     public abstract Value peekValue();
     public abstract Value pop() throws BTreeException;
+    public abstract Value popBack() throws BTreeException;
 
 }

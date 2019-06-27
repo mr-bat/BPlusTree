@@ -165,6 +165,11 @@ class BplusTreeBranchNode<Key extends Comparable, Value> extends BplusTreeNode<K
     }
 
     @Override
+    public BplusTreeLeafNode peekLastNode() {
+        return children.peekBack().peekLastNode();
+    }
+
+    @Override
     public Key peekKey() {
         return children.get(0).peekKey();
     }
@@ -176,6 +181,11 @@ class BplusTreeBranchNode<Key extends Comparable, Value> extends BplusTreeNode<K
 
     @Override
     public Value pop() throws BTreeException {
-        return children.get(0).pop();
+        return children.peekFront().pop();
+    }
+
+    @Override
+    public Value popBack() throws BTreeException {
+        return children.peekBack().popBack();
     }
 }

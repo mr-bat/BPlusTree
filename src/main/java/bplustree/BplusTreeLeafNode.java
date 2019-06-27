@@ -178,6 +178,11 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
         return new BplusTreeIterator(this, keys.size() - 1);
     }
 
+    @Override
+    public BplusTreeLeafNode peekLastNode() {
+        return this;
+    }
+
 
     @Override
     public Key peekKey() {
@@ -195,6 +200,18 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
 
         leaves.popFront();
         keys.popFront();
+
+        if(underOccupied())
+            rebalance();
+        return result;
+    }
+
+    @Override
+    public Value popBack() throws BTreeException {
+        Value result = leaves.peekBack();
+
+        leaves.popBack();
+        keys.popBack();
 
         if(underOccupied())
             rebalance();
