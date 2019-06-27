@@ -98,7 +98,7 @@ public class BplusTree<Key extends Comparable<Key>, Value> {
     public Key peekKey() {
         return _root.peekKey();
     }
-    public Value pop() throws BTreeException {
+    public Value poll() throws BTreeException {
         Value poppedVal = _root.pop();
         if (_root.isEmpty())
             _root = new BplusTreeLeafNode<Key, Value>(null, null, null, this);
