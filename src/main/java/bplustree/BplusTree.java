@@ -4,9 +4,10 @@ import com.google.common.annotations.Beta;
 
 public class BplusTree<Key extends Comparable<Key>, Value> {
     private BplusTreeNode<Key, Value> _root = new BplusTreeLeafNode<Key, Value>(null, null, null, this);
-    private BplusTreeLeafNode recentlyUsed;
+    private BplusTreeLeafNode<Key, Value> recentlyUsed;
+    private BplusTreeLeafNode<Key, Value> lastNode = (BplusTreeLeafNode) _root;
     private int hit = 0, miss = 0;
-    private boolean cacheDisabled = false;
+    private boolean cacheDisabled;
 
     public BplusTree() {
         this(false);
@@ -59,6 +60,8 @@ public class BplusTree<Key extends Comparable<Key>, Value> {
 
         if (_root.getParent() != null)
             _root = _root.getParent();
+        if (lastNode.getNext() != null)
+            lastNode = lastNode.getNext();
     }
     public void remove(Key key) throws BTreeException {
         if (getRecentNode() != null && getRecentNode().isInRange(key)) {
@@ -69,16 +72,23 @@ public class BplusTree<Key extends Comparable<Key>, Value> {
             ++miss;
         }
 
-        if (_root.isEmpty())
+        if (_root.isEmpty()) {
             _root = new BplusTreeLeafNode<Key, Value>(null, null, null, this);
+            lastNode = (BplusTreeLeafNode) _root;
+        }
+        else if (lastNode.isEmpty())
+            lastNode = lastNode.getPrev();
     }
     public void removeFrom(Key key) throws BTreeException {
         _root.removeFrom(key);
 
         if (_root.isEmpty()) {
             _root = new BplusTreeLeafNode<Key, Value>(null, null, null, this);
+            lastNode = (BplusTreeLeafNode) _root;
             recentlyUsed = null;
         }
+        else if (lastNode.isEmpty())
+            lastNode = _root.peekLastNode();
     }
     public Value find(Key key) throws BTreeException {
         if (getRecentNode() != null && getRecentNode().isInRange(key)) {
@@ -98,12 +108,38 @@ public class BplusTree<Key extends Comparable<Key>, Value> {
     public Key peekKey() {
         return _root.peekKey();
     }
+    public Value peekLastValue() {
+        if (lastNode == null)
+            throw new RuntimeException("lastNode can not be null");
+        return lastNode.peekValue();
+    }
+    public Key peekLastKey() {
+        if (lastNode == null)
+            throw new RuntimeException("lastNode can not be null");
+        return lastNode.peekKey();
+    }
     public Value pop() throws BTreeException {
         Value poppedVal = _root.pop();
-        if (_root.isEmpty())
+        if (_root.isEmpty()) {
             _root = new BplusTreeLeafNode<Key, Value>(null, null, null, this);
+            lastNode = (BplusTreeLeafNode) _root;
+        }
 
         return poppedVal;
     }
+    public Value popBack() throws BTreeException {
+        if (lastNode == null)
+            throw new RuntimeException("lastNode can not be null");
 
+        Value poppedVal = lastNode.popBack();
+
+        if (_root.isEmpty()) {
+            _root = new BplusTreeLeafNode<Key, Value>(null, null, null, this);
+            lastNode = (BplusTreeLeafNode) _root;
+        }
+        else if (lastNode.isEmpty())
+            lastNode = lastNode.getPrev();
+
+        return poppedVal;
+    }
 }
