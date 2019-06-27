@@ -58,12 +58,12 @@ public class PeekAndPopNodeInBtreeBenchmark extends AbstractBenchmark {
 
     @Benchmark
     public void popNodeInBtree(Blackhole blackhole) throws BTreeException {
-        blackhole.consume(bplusTree.poll());
+        blackhole.consume(bplusTree.pop());
     }
 
     @Benchmark
     public void peekAndPopNodeInBtree(Blackhole blackhole) throws BTreeException {
         blackhole.consume(bplusTree.peekKey());
-        blackhole.consume(bplusTree.poll());
+        blackhole.consume(bplusTree.pop());
     }
 }

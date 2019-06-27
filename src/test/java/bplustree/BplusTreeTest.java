@@ -213,7 +213,7 @@ class BplusTreeTest {
         for (int i = 0; i < MAXN; i++) {
             Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.peekValue());
             Assertions.assertEquals(Integer.valueOf(i), bplusTree.peekKey());
-            bplusTree.poll();
+            bplusTree.pop();
             Assertions.assertNotEquals(2 * i, bplusTree.peekValue());
             Assertions.assertNotEquals(i, bplusTree.peekKey());
         }
