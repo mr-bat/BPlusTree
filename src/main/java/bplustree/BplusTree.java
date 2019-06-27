@@ -111,7 +111,7 @@ public class BplusTree<Key extends Comparable<Key>, Value> {
     public Value peekLastValue() {
         if (lastNode == null)
             throw new RuntimeException("lastNode can not be null");
-        return lastNode.peekValue();
+        return lastNode.peekBackValue();
     }
     public Key peekLastKey() {
         if (lastNode == null)

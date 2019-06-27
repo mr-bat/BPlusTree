@@ -193,6 +193,9 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
     public Value peekValue() {
         return leaves.peekFront();
     }
+    public Value peekBackValue() {
+        return leaves.peekBack();
+    }
 
     @Override
     public Value pop() throws BTreeException {
