@@ -9,8 +9,20 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
     private BplusTreeLeafNode next, prev;
     private BplusTree tree;
 
+    public BplusTreeLeafNode getNext() {
+        return next;
+    }
+
     public BplusTreeLeafNode getPrev() {
         return prev;
+    }
+
+    public void setNext(BplusTreeLeafNode next) {
+        this.next = next;
+    }
+
+    public void setPrev(BplusTreeLeafNode prev) {
+        this.prev = prev;
     }
 
     public int getDepth() {
@@ -75,6 +87,11 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
     @Override
     protected void rebalance() throws BTreeException {
         tree.setRecentlyUsed(null);
+
+        if (getPrev() != null)
+            getPrev().setNext(getNext());
+        if (getNext() != null)
+            getNext().setPrev(getPrev());
 
         if (parent != null)
             parent.removeNode(LeftRangeKey);
