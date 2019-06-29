@@ -65,7 +65,7 @@ public class BplusTree<Key extends Comparable<Key>, Value> {
         return !cacheDisabled;
     }
 
-    public BplusTreeBranchNode getRecentNode() {
+    public BplusTreeBranchNode<Key, Value> getRecentNode() {
         if (cacheDisabled)
             return null;
         if (recentlyUsed != null && recentlyUsed.getParent() != null)
@@ -107,12 +107,13 @@ public class BplusTree<Key extends Comparable<Key>, Value> {
         if (lastNode.getNext() != null)
             lastNode = lastNode.getNext();
     }
-    public void remove(Key key) throws BTreeException {
+    public Value remove(Key key) throws BTreeException {
+        Value result;
         if (getRecentNode() != null && getRecentNode().isInRange(key)) {
-            getRecentNode().remove(key);
+            result = getRecentNode().remove(key);
             ++hit;
         } else {
-            _root.remove(key);
+            result = _root.remove(key);
             ++miss;
         }
 
@@ -122,6 +123,8 @@ public class BplusTree<Key extends Comparable<Key>, Value> {
         }
         else if (lastNode.isEmpty())
             lastNode = lastNode.getPrev();
+
+        return result;
     }
     public void removeFrom(Key key) throws BTreeException {
         _root.removeFrom(key);

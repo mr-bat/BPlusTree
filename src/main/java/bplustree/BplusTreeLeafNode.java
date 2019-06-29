@@ -124,7 +124,7 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
     }
 
     @Override
-    public void remove(Key key) throws BTreeException {
+    public Value remove(Key key) throws BTreeException {
         if (key == null) {
             throw new BTreeException("Can't work with null key");
         }
@@ -135,11 +135,14 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
             throw new BTreeException("Can't delete non-existent key " + key.toString());
 
         keys.remove(idx);
+        Value result = leaves.get(idx);
         leaves.remove(idx);
 
         if(underOccupied()) {
             rebalance();
         }
+
+        return result;
     }
 
     @Override

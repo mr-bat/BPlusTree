@@ -69,7 +69,7 @@ class BplusTreeTest {
 
         for (int i = 0; i < MAXN; i += 2) {
             Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.find(i));
-            bplusTree.remove(i);
+            Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.remove(i));
             Assertions.assertNull(bplusTree.find(i));
         }
         Assertions.assertThrows(BTreeException.class, () -> bplusTree.remove(2));
@@ -80,7 +80,7 @@ class BplusTreeTest {
     void shouldRemoveRange() throws BTreeException {
         for (int i = MAXN / 30; i < MAXN * 29 / 30; i += 2) {
             Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.find(i));
-            bplusTree.remove(i);
+            Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.remove(i));
             Assertions.assertNull(bplusTree.find(i));
         }
         for (int i = 0; i < MAXN / 30; i++)
@@ -101,7 +101,7 @@ class BplusTreeTest {
         for (int i = 0; i < MAXN; i += forward - backward) {
             for (int j = i; j < min(i + forward, MAXN); j++) {
                 Assertions.assertEquals(Integer.valueOf(2 * j), bplusTree.find(j));
-                bplusTree.remove(j);
+                Assertions.assertEquals(Integer.valueOf(2 * j), bplusTree.remove(j));
                 Assertions.assertNull(bplusTree.find(j));
             }
             for (int j = 1; j <= backward; j++) {
@@ -121,7 +121,7 @@ class BplusTreeTest {
 
             for (int i = 0; i < range; i++) {
                 Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.find(i));
-                bplusTree.remove(i);
+                Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.remove(i));
                 Assertions.assertNull(bplusTree.find(i));
             }
 
