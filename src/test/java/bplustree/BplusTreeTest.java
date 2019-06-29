@@ -3,6 +3,8 @@ package bplustree;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import utility.CircularFifoQueue;
+import utility.SimpleCloneable;
+import utility.SimpleComparableCloneable;
 
 import java.lang.reflect.Field;
 import java.text.MessageFormat;
@@ -333,5 +335,37 @@ class BplusTreeTest {
         Assertions.assertEquals(0, iterator.getKey());
         Assertions.assertEquals(0, iterator.getValue());
         Assertions.assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    void shouldCheckEquals() throws CloneNotSupportedException, BTreeException {
+        Assertions.assertNotEquals(bplusTree, new BplusTree<Integer, Integer>());
+        Assertions.assertEquals(bplusTree, bplusTree);
+        Assertions.assertNotEquals(bplusTree, null);
+
+        BplusTree<Integer, Integer> secondaryTree = bplusTree.clone();
+        Assertions.assertEquals(bplusTree, secondaryTree);
+
+        secondaryTree.add(-1, -1);
+        Assertions.assertNull(bplusTree.find(-1));
+        Assertions.assertNotEquals(bplusTree, secondaryTree);
+
+        secondaryTree.remove(-1);
+        Assertions.assertEquals(bplusTree, secondaryTree);
+
+        bplusTree.add(-1, -1);
+        secondaryTree.add(-1, -1);
+        Assertions.assertEquals(bplusTree, secondaryTree);
+    }
+
+    @Test
+    void shouldClone() throws CloneNotSupportedException, BTreeException {
+        BplusTree<SimpleComparableCloneable, SimpleCloneable> bplusTree = new BplusTree<>();
+        Assertions.assertNotSame(bplusTree, bplusTree.clone());
+
+        BplusTree<SimpleComparableCloneable, SimpleCloneable> mutatedBplusTree = new BplusTree();
+        mutatedBplusTree.add(new SimpleComparableCloneable(), new SimpleCloneable());
+        Assertions.assertNotEquals(bplusTree, mutatedBplusTree);
+        Assertions.assertEquals(mutatedBplusTree, mutatedBplusTree.clone());
     }
 }

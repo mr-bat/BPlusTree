@@ -6,7 +6,7 @@ import static utility.Utils.searchLeftmostKey;
 import static utility.Utils.searchRightmostKey;
 
 class BplusTreeBranchNode<Key extends Comparable, Value> extends BplusTreeNode<Key, Value>{
-    private CircularFifoQueue<BplusTreeNode<Key, Value>> children;
+    protected CircularFifoQueue<BplusTreeNode<Key, Value>> children;
 
     public BplusTreeBranchNode(BplusTreeBranchNode parent) {
         this(new CircularFifoQueue<>(CAPACITY), new CircularFifoQueue<>(CAPACITY), parent);

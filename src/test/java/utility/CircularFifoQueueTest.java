@@ -404,12 +404,6 @@ class CircularFifoQueueTest {
         Assertions.assertEquals(Integer.valueOf(0), queue.peekFrontForced());
     }
 
-    class SimpleCloneable implements Cloneable {
-        public SimpleCloneable clone() throws CloneNotSupportedException {
-            return (SimpleCloneable) super.clone();
-        }
-    }
-
     @Test
     void equals() {
         Assertions.assertEquals(queue, queue);

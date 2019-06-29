@@ -3,11 +3,55 @@ package bplustree;
 import com.google.common.annotations.Beta;
 
 public class BplusTree<Key extends Comparable<Key>, Value> {
-    private BplusTreeNode<Key, Value> _root = new BplusTreeLeafNode<Key, Value>(null, null, null, this);
+    private BplusTreeNode<Key, Value> _root = new BplusTreeLeafNode<>(null, null, null, this);
     private BplusTreeLeafNode<Key, Value> recentlyUsed;
     private BplusTreeLeafNode<Key, Value> lastNode = (BplusTreeLeafNode) _root;
     private int hit = 0, miss = 0;
     private boolean cacheDisabled;
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof BplusTree))
+            return false;
+
+        BplusTreeLeafNode.BplusTreeIterator here = peekLast();
+        BplusTreeLeafNode.BplusTreeIterator there = ((BplusTree) obj).peekLast();
+
+        if (here == null || there == null)
+            return here == there;
+
+        while (true) {
+            if (!here.getKey().equals(there.getKey()))
+                return false;
+            if (!here.getValue().equals(there.getValue()))
+                return false;
+            if (here.hasNext() != there.hasNext())
+                return false;
+
+            if (here.hasNext()) {
+                here.goToNext();
+                there.goToNext();
+            }
+            else
+                break;
+        }
+
+        return true;
+    }
+
+    @Override
+    public BplusTree<Key, Value> clone() throws CloneNotSupportedException{
+        BplusTree cloned = new BplusTree();
+        BplusTreeCloner treeCloner = new BplusTreeCloner<Key, Value>(cloned);
+
+        cloned._root = treeCloner.clone(this._root);
+        cloned.recentlyUsed = (BplusTreeLeafNode) treeCloner.clone(recentlyUsed);
+        cloned.lastNode = (BplusTreeLeafNode) treeCloner.clone(lastNode);
+        cloned.hit = this.hit;
+        cloned.miss = this.miss;
+        cloned.cacheDisabled = this.cacheDisabled;
+        return cloned;
+    }
 
     public BplusTree() {
         this(false);

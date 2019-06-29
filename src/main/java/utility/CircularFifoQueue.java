@@ -17,6 +17,8 @@ package utility;
  * limitations under the License.
  */
 
+import bplustree.BplusTreeCloner;
+import bplustree.BplusTreeNode;
 import com.google.common.annotations.Beta;
 
 import java.io.IOException;
@@ -135,19 +137,37 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
         cloned.start = this.start;
         cloned.end = this.end;
         cloned.full = this.full;
+        cloned.elements = new Object[maxElements];
 
         for (int i = 0; i < this.maxElements; i++)
             if (this.elements[i] != null) {
-                try {
+                if (this.elements[i] instanceof Cloneable)
                     try {
-                        cloned.elements[i] = this.elements[i].getClass().getMethod("clone").invoke(this.elements[i]);
-                    } catch (IllegalAccessException | InvocationTargetException e) {
+                        try {
+                            cloned.elements[i] = this.elements[i].getClass().getMethod("clone").invoke(this.elements[i]);
+                        } catch (IllegalAccessException | InvocationTargetException e) {
+                            e.printStackTrace();
+                        }
+                    } catch (NoSuchMethodException e) {
                         e.printStackTrace();
+                        throw new CloneNotSupportedException("E is not cloneable");
                     }
-                } catch (NoSuchMethodException e) {
-                    e.printStackTrace();
-                    throw new CloneNotSupportedException("E is not cloneable");
-                }
+                else
+                    cloned.elements[i] = this.elements[i];
+            }
+        return cloned;
+    }
+
+    public CircularFifoQueue clone(BplusTreeCloner cloner) throws CloneNotSupportedException {
+        CircularFifoQueue cloned = (CircularFifoQueue) super.clone();
+        cloned.start = this.start;
+        cloned.end = this.end;
+        cloned.full = this.full;
+        cloned.elements = new BplusTreeNode[maxElements];
+
+        for (int i = 0; i < this.maxElements; i++)
+            if (this.elements[i] != null) {
+                cloned.elements[i] = cloner.clone((BplusTreeNode) this.elements[i]);
             }
         return cloned;
     }

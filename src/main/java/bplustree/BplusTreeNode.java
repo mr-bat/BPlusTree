@@ -2,7 +2,7 @@ package bplustree;
 
 import utility.CircularFifoQueue;
 
-abstract class BplusTreeNode<Key extends Comparable, Value> {
+public abstract class BplusTreeNode<Key extends Comparable, Value> {
     protected static final int CAPACITY = 127;
     protected BplusTreeBranchNode parent;
     protected CircularFifoQueue<Key> keys;

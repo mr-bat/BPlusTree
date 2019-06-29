@@ -5,9 +5,10 @@ import utility.CircularFifoQueue;
 import static utility.Utils.searchLeftmostKey;
 
 class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNode<Key, Value> {
-    private CircularFifoQueue<Value> leaves;
-    private BplusTreeLeafNode next, prev;
-    private BplusTree tree;
+    protected CircularFifoQueue<Value> leaves;
+    protected BplusTreeLeafNode next;
+    protected BplusTreeLeafNode prev;
+    protected BplusTree tree;
 
     public BplusTreeLeafNode getNext() {
         return next;
