@@ -318,7 +318,9 @@ class BplusTreeTest {
     }
 
     @Test
-    void peekLast() {
+    void shouldIterateBackward() {
+        Assertions.assertNull(new BplusTree<Integer, Integer>().peekLast());
+
         BplusTreeLeafNode.BplusTreeIterator iterator = bplusTree.peekLast();
 
         for (int i = MAXN - 1; i > 0; i--) {

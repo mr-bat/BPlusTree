@@ -175,7 +175,7 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
 
     @Override
     public BplusTreeIterator peekLast() {
-        return new BplusTreeIterator(this, keys.size() - 1);
+        return isEmpty() ? null : new BplusTreeIterator(this, keys.size() - 1);
     }
 
     @Override
