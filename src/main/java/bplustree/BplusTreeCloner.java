@@ -67,11 +67,9 @@ public class BplusTreeCloner<K extends Comparable, V> {
         cloned.keys = base.keys.clone();
         if (base.LeftRangeKey instanceof Cloneable)
             try {
-                try {
-                    cloned.LeftRangeKey = (Comparable) base.LeftRangeKey.getClass().getMethod("clone").invoke(base.LeftRangeKey);
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    e.printStackTrace();
-                }
+                cloned.LeftRangeKey = (Comparable) base.LeftRangeKey.getClass().getMethod("clone").invoke(base.LeftRangeKey);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                e.printStackTrace();
             } catch (NoSuchMethodException e) {
                 cloned.LeftRangeKey = base.LeftRangeKey;
                 throw new CloneNotSupportedException("Key is not cloneable");

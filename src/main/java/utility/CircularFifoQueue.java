@@ -143,11 +143,9 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
             if (this.elements[i] != null) {
                 if (this.elements[i] instanceof Cloneable)
                     try {
-                        try {
-                            cloned.elements[i] = this.elements[i].getClass().getMethod("clone").invoke(this.elements[i]);
-                        } catch (IllegalAccessException | InvocationTargetException e) {
-                            e.printStackTrace();
-                        }
+                        cloned.elements[i] = this.elements[i].getClass().getMethod("clone").invoke(this.elements[i]);
+                    } catch (IllegalAccessException | InvocationTargetException e) {
+                        e.printStackTrace();
                     } catch (NoSuchMethodException e) {
                         e.printStackTrace();
                         throw new CloneNotSupportedException("E is not cloneable");
