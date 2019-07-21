@@ -120,7 +120,7 @@ public class AddNodeToBtreeBenchmark extends AbstractBenchmark {
     }
 
 
-    @TearDown
+    @TearDown(Level.Iteration)
     public void tearDown() {
         System.out.println(MessageFormat.format("test finished with {0} hits and {1} misses", bplusTree.getHit(), bplusTree.getMiss()));
         System.out.println(MessageFormat.format("sample depth is {0}", bplusTree.getSampleDepth()));
