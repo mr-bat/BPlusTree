@@ -23,6 +23,8 @@ public abstract class BplusTreeNode<Key extends Comparable, Value> {
     public boolean isInRange(Key key) throws BTreeException {
         if (key == null)
             throw new BTreeException("Can't work with null key");
+        if (LeftRangeKey == null)
+            return true;
         return key.compareTo(LeftRangeKey) > -1 && key.compareTo(keys.peekBack()) < 1;
     }
 

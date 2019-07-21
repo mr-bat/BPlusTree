@@ -99,6 +99,13 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
     }
 
     @Override
+    public boolean isInRange(Key key) throws BTreeException {
+        if (super.isInRange(key))
+            return true;
+        return getNext() == null && key.compareTo(keys.peekBack()) > 0;
+    }
+
+    @Override
     public void add(Key key, Value value) throws BTreeException {
         if (key == null) {
             throw new BTreeException("Can't work with null key");
