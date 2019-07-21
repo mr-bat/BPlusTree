@@ -341,6 +341,7 @@ class BplusTreeTest {
     void shouldCheckEquals() throws CloneNotSupportedException, BTreeException {
         Assertions.assertNotEquals(bplusTree, new BplusTree<Integer, Integer>());
         Assertions.assertEquals(bplusTree, bplusTree);
+        Assertions.assertEquals(new BplusTree<Integer, Integer>(), new BplusTree<Integer, Integer>());
         Assertions.assertNotEquals(bplusTree, null);
 
         BplusTree<Integer, Integer> secondaryTree = bplusTree.clone();
@@ -348,6 +349,7 @@ class BplusTreeTest {
 
         secondaryTree.add(-1, -1);
         Assertions.assertNull(bplusTree.find(-1));
+        Assertions.assertNotNull(secondaryTree.find(-1));
         Assertions.assertNotEquals(bplusTree, secondaryTree);
 
         secondaryTree.remove(-1);
@@ -356,6 +358,11 @@ class BplusTreeTest {
         bplusTree.add(-1, -1);
         secondaryTree.add(-1, -1);
         Assertions.assertEquals(bplusTree, secondaryTree);
+
+        bplusTree.add(MAXN, 2 * MAXN);
+        Assertions.assertNotEquals(bplusTree, secondaryTree);
+        secondaryTree.add(MAXN, 3 * MAXN);
+        Assertions.assertNotEquals(bplusTree, secondaryTree);
     }
 
     @Test
