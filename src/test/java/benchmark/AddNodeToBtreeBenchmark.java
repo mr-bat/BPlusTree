@@ -109,21 +109,21 @@ public class AddNodeToBtreeBenchmark extends AbstractBenchmark {
         addNodeRandomPermutationBatch(20);
     }
 
-    @Benchmark
-    public void addNodeRandomPermutationBatch30() throws BTreeException {
-        addNodeRandomPermutationBatch(30);
-    }
+//    @Benchmark
+//    public void addNodeRandomPermutationBatch30() throws BTreeException {
+//        addNodeRandomPermutationBatch(30);
+//    }
 
     @Benchmark
     public void addNodeRandomPermutationBatch100() throws BTreeException {
         addNodeRandomPermutationBatch(100);
     }
 
-    @Benchmark
-    public void addNodeRandom() throws BTreeException {
-        Integer currIndex = getNextRandIndex();
-        bplusTree.add(currIndex, currIndex);
-    }
+//    @Benchmark
+//    public void addNodeRandom() throws BTreeException {
+//        Integer currIndex = getNextRandIndex();
+//        bplusTree.add(currIndex, currIndex);
+//    }
 
     @Benchmark
     public void addBatch1k() throws BTreeException {
