@@ -163,7 +163,7 @@ public class BplusTree<Key extends Comparable<Key>, Value> {
     public Key peekLastKey() {
         if (lastNode == null)
             throw new RuntimeException("lastNode can not be null");
-        return lastNode.peekKey();
+        return lastNode.peekBackKey();
     }
     public Value pop() throws BTreeException {
         Value poppedVal = _root.pop();

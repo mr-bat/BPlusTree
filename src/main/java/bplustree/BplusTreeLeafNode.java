@@ -4,7 +4,7 @@ import utility.CircularFifoQueue;
 
 import static utility.Utils.searchLeftmostKey;
 
-class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNode<Key, Value> {
+public class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNode<Key, Value> {
     protected CircularFifoQueue<Value> leaves;
     protected BplusTreeLeafNode next;
     protected BplusTreeLeafNode prev;
@@ -199,6 +199,9 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
     public Key peekKey() {
         return keys.peekFront();
     }
+    public Key peekBackKey() {
+        return keys.peekBack();
+    }
 
     @Override
     public Value peekValue() {
@@ -236,7 +239,7 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
         private BplusTreeLeafNode<Key, Value> node;
         private int index;
 
-        public BplusTreeIterator(BplusTreeLeafNode<Key, Value> node, int index) {
+        BplusTreeIterator(BplusTreeLeafNode<Key, Value> node, int index) {
             this.node = node;
             this.index = index;
         }
