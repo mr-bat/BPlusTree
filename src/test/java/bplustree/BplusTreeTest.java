@@ -1,6 +1,7 @@
 package bplustree;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import utility.CircularFifoQueue;
 import utility.SimpleCloneable;
@@ -234,6 +235,7 @@ class BplusTreeTest {
         Assertions.assertEquals(1, bplusTree.getMiss() - initialMiss);
     }
 
+    @Disabled
     @org.junit.jupiter.api.Test
     void shouldCacheHitFind() throws BTreeException {
         if (bplusTree.cacheEnabled()) {
@@ -247,6 +249,7 @@ class BplusTreeTest {
         }
     }
 
+    @Disabled
     @org.junit.jupiter.api.Test
     void shouldCacheMissFind() throws BTreeException {
         if (bplusTree.cacheEnabled()) {
@@ -260,6 +263,7 @@ class BplusTreeTest {
         }
     }
 
+    @Disabled
     @org.junit.jupiter.api.Test
     void shouldCacheHitRemove() throws BTreeException {
         if (bplusTree.cacheEnabled()) {
@@ -273,6 +277,7 @@ class BplusTreeTest {
         }
     }
 
+    @Disabled
     @org.junit.jupiter.api.Test
     void shouldCacheMissRemove() throws BTreeException {
         if (bplusTree.cacheEnabled()) {
@@ -286,6 +291,7 @@ class BplusTreeTest {
         }
     }
 
+    @Disabled
     @org.junit.jupiter.api.Test
     void shouldCacheHitAdd() throws BTreeException {
         if (bplusTree.cacheEnabled()) {
@@ -299,6 +305,7 @@ class BplusTreeTest {
         }
     }
 
+    @Disabled
     @org.junit.jupiter.api.Test
     void shouldCacheMissAdd() throws BTreeException {
         if (bplusTree.cacheEnabled()) {
@@ -317,6 +324,56 @@ class BplusTreeTest {
         Assertions.assertEquals(3, bplusTree.getSampleDepth());
         bplusTree = new BplusTree<>();
         Assertions.assertEquals(-1, bplusTree.getSampleDepth());
+    }
+
+    @Test
+    void shouldCheckLastValueAndKey() throws BTreeException {
+        for (int i = MAXN - 1; i >= 0; --i) {
+            Assertions.assertEquals(Integer.valueOf(i), bplusTree.peekLastKey());
+            Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.peekLastValue());
+            bplusTree.removeFrom(i);
+        }
+
+        for (int i = 1; i < MAXN; i++) {
+            bplusTree.add(i, 2 * i);
+            Assertions.assertEquals(Integer.valueOf(i), bplusTree.peekLastKey());
+            Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.peekLastValue());
+        }
+        bplusTree.add(0, 0);
+
+        for (int i = MAXN - 1; i >= 0; --i) {
+            Assertions.assertEquals(Integer.valueOf(i), bplusTree.peekLastKey());
+            bplusTree.remove(i);
+        }
+    }
+
+    @Test
+    void shouldCheckLastValueAndKeyLeafRoot() throws BTreeException {
+        int MAX = 5;
+        bplusTree = new BplusTree<>(true);
+
+        for (int i = 1; i < MAX; i++) {
+            bplusTree.add(i, 2 * i);
+            Assertions.assertEquals(Integer.valueOf(i), bplusTree.peekLastKey());
+            Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.peekLastValue());
+        }
+
+        for (int i = MAX - 1; i > 0; --i) {
+            Assertions.assertEquals(Integer.valueOf(i), bplusTree.peekLastKey());
+            Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.peekLastValue());
+            bplusTree.removeFrom(i);
+        }
+
+        for (int i = 1; i < MAX; i++) {
+            bplusTree.add(i, 2 * i);
+            Assertions.assertEquals(Integer.valueOf(i), bplusTree.peekLastKey());
+            Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.peekLastValue());
+        }
+
+        for (int i = MAX - 1; i > 0; --i) {
+            Assertions.assertEquals(Integer.valueOf(i), bplusTree.peekLastKey());
+            bplusTree.remove(i);
+        }
     }
 
     @Test
