@@ -30,6 +30,14 @@ public abstract class BplusTreeNode<Key extends Comparable, Value> {
 
     public abstract void add(Key searchKey, Value value) throws BTreeException;
     public abstract Value remove(Key searchKey) throws BTreeException;
+
+    void bottomUpRemoveFrom(Key thresholdKey) throws BTreeException {
+        if (parent == null || isInRange(thresholdKey))
+            removeFrom(thresholdKey);
+        else
+            parent.bottomUpRemoveFrom(thresholdKey);
+    }
+
     public abstract void removeFrom(Key searchKey) throws BTreeException;
     public abstract Value find(Key searchKey) throws BTreeException;
     public abstract BplusTreeLeafNode.BplusTreeIterator peekLast();
