@@ -93,6 +93,17 @@ public class BplusTree<Key extends Comparable<Key>, Value> {
         return _root.isEmpty();
     }
 
+    public void addWithCacheLastRecent(Key key, Value value) throws BTreeException {
+        if (recentlyUsed != null && recentlyUsed.isInRange(key)) {
+            ++hit;
+            recentlyUsed.add(key, value);
+            if (_root.getParent() != null)
+                _root = _root.getParent();
+            if (lastNode.getNext() != null)
+                lastNode = lastNode.getNext();
+        } else
+            add(key, value);
+    }
     public void add(Key key, Value value) throws BTreeException {
 //        if (!cacheDisabled && lastNode.isInRange(key)) {
 //            ++hit;
