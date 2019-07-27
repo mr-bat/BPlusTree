@@ -6,7 +6,7 @@ import static utility.Utils.searchLeftmostKey;
 import static utility.Utils.searchRightmostKey;
 
 class BplusTreeBranchNode<Key extends Comparable, Value> extends BplusTreeNode<Key, Value>{
-    private CircularFifoQueue<BplusTreeNode<Key, Value>> children;
+    protected CircularFifoQueue<BplusTreeNode<Key, Value>> children;
 
     public BplusTreeBranchNode(BplusTreeBranchNode parent) {
         this(new CircularFifoQueue<>(CAPACITY), new CircularFifoQueue<>(CAPACITY), parent);
@@ -116,14 +116,14 @@ class BplusTreeBranchNode<Key extends Comparable, Value> extends BplusTreeNode<K
     }
 
     @Override
-    public void remove(Key key) throws BTreeException {
+    public Value remove(Key key) throws BTreeException {
         if (key == null) {
             throw new BTreeException("Can't search on null Value");
         }
         int idx = searchRightmostKey(keys, key, keys.size());
 
         idx = idx < 0 ? -(idx + 1) : idx;
-        children.get(idx).remove(key);
+        return children.get(idx).remove(key);
     }
 
     @Override
@@ -165,6 +165,11 @@ class BplusTreeBranchNode<Key extends Comparable, Value> extends BplusTreeNode<K
     }
 
     @Override
+    public BplusTreeLeafNode peekLastNode() {
+        return children.peekBack().peekLastNode();
+    }
+
+    @Override
     public Key peekKey() {
         return children.get(0).peekKey();
     }
@@ -176,6 +181,11 @@ class BplusTreeBranchNode<Key extends Comparable, Value> extends BplusTreeNode<K
 
     @Override
     public Value pop() throws BTreeException {
-        return children.get(0).pop();
+        return children.peekFront().pop();
+    }
+
+    @Override
+    public Value popBack() throws BTreeException {
+        return children.peekBack().popBack();
     }
 }

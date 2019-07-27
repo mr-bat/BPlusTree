@@ -71,6 +71,12 @@ public class AddNodeToBtreeBenchmark extends AbstractBenchmark {
         return index * Period + ++occCounter[index];
     }
 
+    void addNodeRandomPermutationBatch(int batchSize) throws BTreeException {
+        Integer currIndex = getNextRandPermutationIndex();
+        for (int i = 0; i < batchSize; ++i)
+            bplusTree.add(currIndex * batchSize + i, currIndex);
+    }
+
     @Benchmark
     public void addNodeInIncrement() throws BTreeException {
         Integer currIndex = getNextIndex();
@@ -85,15 +91,39 @@ public class AddNodeToBtreeBenchmark extends AbstractBenchmark {
 
     @Benchmark
     public void addNodeRandomPermutation() throws BTreeException {
-        Integer currIndex = getNextRandPermutationIndex();
-        bplusTree.add(currIndex, currIndex);
+        addNodeRandomPermutationBatch(1);
     }
 
     @Benchmark
-    public void addNodeRandom() throws BTreeException {
-        Integer currIndex = getNextRandIndex();
-        bplusTree.add(currIndex, currIndex);
+    public void addNodeRandomPermutationBatch5() throws BTreeException {
+        addNodeRandomPermutationBatch(5);
     }
+
+    @Benchmark
+    public void addNodeRandomPermutationBatch10() throws BTreeException {
+        addNodeRandomPermutationBatch(10);
+    }
+
+    @Benchmark
+    public void addNodeRandomPermutationBatch20() throws BTreeException {
+        addNodeRandomPermutationBatch(20);
+    }
+
+//    @Benchmark
+//    public void addNodeRandomPermutationBatch30() throws BTreeException {
+//        addNodeRandomPermutationBatch(30);
+//    }
+
+    @Benchmark
+    public void addNodeRandomPermutationBatch100() throws BTreeException {
+        addNodeRandomPermutationBatch(100);
+    }
+
+//    @Benchmark
+//    public void addNodeRandom() throws BTreeException {
+//        Integer currIndex = getNextRandIndex();
+//        bplusTree.add(currIndex, currIndex);
+//    }
 
     @Benchmark
     public void addBatch1k() throws BTreeException {
@@ -120,7 +150,7 @@ public class AddNodeToBtreeBenchmark extends AbstractBenchmark {
     }
 
 
-    @TearDown
+    @TearDown(Level.Iteration)
     public void tearDown() {
         System.out.println(MessageFormat.format("test finished with {0} hits and {1} misses", bplusTree.getHit(), bplusTree.getMiss()));
         System.out.println(MessageFormat.format("sample depth is {0}", bplusTree.getSampleDepth()));

@@ -4,13 +4,26 @@ import utility.CircularFifoQueue;
 
 import static utility.Utils.searchLeftmostKey;
 
-class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNode<Key, Value> {
-    private CircularFifoQueue<Value> leaves;
-    private BplusTreeLeafNode next, prev;
-    private BplusTree tree;
+public class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNode<Key, Value> {
+    protected CircularFifoQueue<Value> leaves;
+    protected BplusTreeLeafNode next;
+    protected BplusTreeLeafNode prev;
+    protected BplusTree tree;
+
+    public BplusTreeLeafNode getNext() {
+        return next;
+    }
 
     public BplusTreeLeafNode getPrev() {
         return prev;
+    }
+
+    public void setNext(BplusTreeLeafNode next) {
+        this.next = next;
+    }
+
+    public void setPrev(BplusTreeLeafNode prev) {
+        this.prev = prev;
     }
 
     public int getDepth() {
@@ -76,8 +89,20 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
     protected void rebalance() throws BTreeException {
         tree.setRecentlyUsed(null);
 
+        if (getPrev() != null)
+            getPrev().setNext(getNext());
+        if (getNext() != null)
+            getNext().setPrev(getPrev());
+
         if (parent != null)
             parent.removeNode(LeftRangeKey);
+    }
+
+    @Override
+    public boolean isInRange(Key key) throws BTreeException {
+        if (super.isInRange(key))
+            return true;
+        return getNext() == null && key.compareTo(keys.peekBack()) > 0;
     }
 
     @Override
@@ -106,7 +131,7 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
     }
 
     @Override
-    public void remove(Key key) throws BTreeException {
+    public Value remove(Key key) throws BTreeException {
         if (key == null) {
             throw new BTreeException("Can't work with null key");
         }
@@ -117,11 +142,14 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
             throw new BTreeException("Can't delete non-existent key " + key.toString());
 
         keys.remove(idx);
+        Value result = leaves.get(idx);
         leaves.remove(idx);
 
         if(underOccupied()) {
             rebalance();
         }
+
+        return result;
     }
 
     @Override
@@ -158,7 +186,12 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
 
     @Override
     public BplusTreeIterator peekLast() {
-        return new BplusTreeIterator(this, keys.size() - 1);
+        return isEmpty() ? null : new BplusTreeIterator(this, keys.size() - 1);
+    }
+
+    @Override
+    public BplusTreeLeafNode peekLastNode() {
+        return this;
     }
 
 
@@ -166,10 +199,16 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
     public Key peekKey() {
         return keys.peekFront();
     }
+    public Key peekBackKey() {
+        return keys.peekBack();
+    }
 
     @Override
     public Value peekValue() {
         return leaves.peekFront();
+    }
+    public Value peekBackValue() {
+        return leaves.peekBack();
     }
 
     @Override
@@ -184,11 +223,23 @@ class BplusTreeLeafNode<Key extends Comparable<Key>, Value> extends BplusTreeNod
         return result;
     }
 
+    @Override
+    public Value popBack() throws BTreeException {
+        Value result = leaves.peekBack();
+
+        leaves.popBack();
+        keys.popBack();
+
+        if(underOccupied())
+            rebalance();
+        return result;
+    }
+
     public class BplusTreeIterator implements Iterator{
         private BplusTreeLeafNode<Key, Value> node;
         private int index;
 
-        public BplusTreeIterator(BplusTreeLeafNode<Key, Value> node, int index) {
+        BplusTreeIterator(BplusTreeLeafNode<Key, Value> node, int index) {
             this.node = node;
             this.index = index;
         }

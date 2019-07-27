@@ -17,6 +17,8 @@ package utility;
  * limitations under the License.
  */
 
+import bplustree.BplusTreeCloner;
+import bplustree.BplusTreeNode;
 import com.google.common.annotations.Beta;
 
 import java.io.IOException;
@@ -24,13 +26,13 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
 import java.util.AbstractCollection;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import static java.lang.StrictMath.max;
-import static java.lang.StrictMath.min;
+import static java.lang.StrictMath.*;
 
 /**
  * CircularFifoQueue is a first-in first-out queue with a fixed size
@@ -40,7 +42,7 @@ import static java.lang.StrictMath.min;
  * @since 4.0
  */
 public class CircularFifoQueue<E> extends AbstractCollection<E>
-        implements Serializable {
+        implements Serializable, Cloneable {
 
     /** Serialization version. */
     private static final long serialVersionUID = -8423413834657610406L;
@@ -112,6 +114,61 @@ public class CircularFifoQueue<E> extends AbstractCollection<E>
         this.full = end == maxElements;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof CircularFifoQueue))
+            return false;
+
+        CircularFifoQueue queue = (CircularFifoQueue) obj;
+        if (queue.start != this.start || queue.end != this.end || queue.full != this.full || queue.maxElements != this.maxElements)
+            return false;
+        for (int i = 0; i < this.maxElements; i++)
+            if (this.elements[i] != null) {
+                if (!queue.elements[i].equals(this.elements[i]))
+                    return false;
+            } else if (queue.elements[i] != null)
+                return false;
+
+        return true;
+    }
+
+    public CircularFifoQueue clone() throws CloneNotSupportedException {
+        CircularFifoQueue cloned = (CircularFifoQueue) super.clone();
+        cloned.start = this.start;
+        cloned.end = this.end;
+        cloned.full = this.full;
+        cloned.elements = new Object[maxElements];
+
+        for (int i = 0; i < this.maxElements; i++)
+            if (this.elements[i] != null) {
+                if (this.elements[i] instanceof Cloneable)
+                    try {
+                        cloned.elements[i] = this.elements[i].getClass().getMethod("clone").invoke(this.elements[i]);
+                    } catch (IllegalAccessException | InvocationTargetException e) {
+                        e.printStackTrace();
+                    } catch (NoSuchMethodException e) {
+                        e.printStackTrace();
+                        throw new CloneNotSupportedException("E is not cloneable");
+                    }
+                else
+                    cloned.elements[i] = this.elements[i];
+            }
+        return cloned;
+    }
+
+    public CircularFifoQueue clone(BplusTreeCloner cloner) throws CloneNotSupportedException {
+        CircularFifoQueue cloned = (CircularFifoQueue) super.clone();
+        cloned.start = this.start;
+        cloned.end = this.end;
+        cloned.full = this.full;
+        cloned.elements = new BplusTreeNode[maxElements];
+
+        for (int i = 0; i < this.maxElements; i++)
+            if (this.elements[i] != null) {
+                cloned.elements[i] = cloner.clone((BplusTreeNode) this.elements[i]);
+            }
+        return cloned;
+    }
     //-----------------------------------------------------------------------
     /**
      * Write the queue out using a custom routine.

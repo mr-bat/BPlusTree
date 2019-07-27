@@ -403,4 +403,45 @@ class CircularFifoQueueTest {
         queue.removeFrom(0);
         Assertions.assertEquals(Integer.valueOf(0), queue.peekFrontForced());
     }
+
+    @Test
+    void equals() {
+        Assertions.assertEquals(queue, queue);
+        CircularFifoQueue shifted = new CircularFifoQueue(4);
+
+        shifted.pushBack(0);
+        shifted.pushBack(queue.peekFront());
+        shifted.popFront();
+
+        for (int i = 1; i < 4; i++)
+            shifted.pushBack(queue.get(i));
+
+        for (int i = 0; i < 4; i++)
+            Assertions.assertEquals(shifted.get(i), queue.get(i));
+        Assertions.assertNotEquals(shifted, queue);
+    }
+
+    @Test
+    void cloneFullArray() throws CloneNotSupportedException {
+        CircularFifoQueue<SimpleCloneable> base = new CircularFifoQueue<>(4);
+        for (int i = 0; i < 2; i++) {
+            base.pushBack(new SimpleCloneable());
+            base.pushFront(new SimpleCloneable());
+        }
+
+        CircularFifoQueue cloned = base.clone();
+        Assertions.assertEquals(base, cloned);
+        Assertions.assertNotSame(base, cloned);
+    }
+
+    @Test
+    void cloneHalfFullArray() throws CloneNotSupportedException {
+        CircularFifoQueue<SimpleCloneable> base = new CircularFifoQueue<>(4);
+        base.pushFront(new SimpleCloneable());
+        base.pushBack(new SimpleCloneable());
+
+        CircularFifoQueue cloned = base.clone();
+        Assertions.assertEquals(base, cloned);
+        Assertions.assertNotSame(base, cloned);
+    }
 }

@@ -1,8 +1,11 @@
 package bplustree;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import utility.CircularFifoQueue;
+import utility.SimpleCloneable;
+import utility.SimpleComparableCloneable;
 
 import java.lang.reflect.Field;
 import java.text.MessageFormat;
@@ -23,6 +26,7 @@ class BplusTreeTest {
         bplusTree.add(0, 0);
     }
 
+    @Disabled
     @org.junit.jupiter.api.Test
     void shouldBeInRange() throws NoSuchFieldException, IllegalAccessException, BTreeException {
         Field _root = BplusTree.class.getDeclaredField("_root");
@@ -67,7 +71,7 @@ class BplusTreeTest {
 
         for (int i = 0; i < MAXN; i += 2) {
             Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.find(i));
-            bplusTree.remove(i);
+            Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.remove(i));
             Assertions.assertNull(bplusTree.find(i));
         }
         Assertions.assertThrows(BTreeException.class, () -> bplusTree.remove(2));
@@ -78,7 +82,7 @@ class BplusTreeTest {
     void shouldRemoveRange() throws BTreeException {
         for (int i = MAXN / 30; i < MAXN * 29 / 30; i += 2) {
             Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.find(i));
-            bplusTree.remove(i);
+            Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.remove(i));
             Assertions.assertNull(bplusTree.find(i));
         }
         for (int i = 0; i < MAXN / 30; i++)
@@ -99,7 +103,7 @@ class BplusTreeTest {
         for (int i = 0; i < MAXN; i += forward - backward) {
             for (int j = i; j < min(i + forward, MAXN); j++) {
                 Assertions.assertEquals(Integer.valueOf(2 * j), bplusTree.find(j));
-                bplusTree.remove(j);
+                Assertions.assertEquals(Integer.valueOf(2 * j), bplusTree.remove(j));
                 Assertions.assertNull(bplusTree.find(j));
             }
             for (int j = 1; j <= backward; j++) {
@@ -119,7 +123,7 @@ class BplusTreeTest {
 
             for (int i = 0; i < range; i++) {
                 Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.find(i));
-                bplusTree.remove(i);
+                Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.remove(i));
                 Assertions.assertNull(bplusTree.find(i));
             }
 
@@ -232,6 +236,7 @@ class BplusTreeTest {
         Assertions.assertEquals(1, bplusTree.getMiss() - initialMiss);
     }
 
+    @Disabled
     @org.junit.jupiter.api.Test
     void shouldCacheHitFind() throws BTreeException {
         if (bplusTree.cacheEnabled()) {
@@ -245,6 +250,7 @@ class BplusTreeTest {
         }
     }
 
+    @Disabled
     @org.junit.jupiter.api.Test
     void shouldCacheMissFind() throws BTreeException {
         if (bplusTree.cacheEnabled()) {
@@ -258,6 +264,7 @@ class BplusTreeTest {
         }
     }
 
+    @Disabled
     @org.junit.jupiter.api.Test
     void shouldCacheHitRemove() throws BTreeException {
         if (bplusTree.cacheEnabled()) {
@@ -271,6 +278,7 @@ class BplusTreeTest {
         }
     }
 
+    @Disabled
     @org.junit.jupiter.api.Test
     void shouldCacheMissRemove() throws BTreeException {
         if (bplusTree.cacheEnabled()) {
@@ -284,6 +292,7 @@ class BplusTreeTest {
         }
     }
 
+    @Disabled
     @org.junit.jupiter.api.Test
     void shouldCacheHitAdd() throws BTreeException {
         if (bplusTree.cacheEnabled()) {
@@ -297,6 +306,7 @@ class BplusTreeTest {
         }
     }
 
+    @Disabled
     @org.junit.jupiter.api.Test
     void shouldCacheMissAdd() throws BTreeException {
         if (bplusTree.cacheEnabled()) {
@@ -310,6 +320,7 @@ class BplusTreeTest {
         }
     }
 
+    @Disabled
     @org.junit.jupiter.api.Test
     void shouldCheckSampleDepth() {
         Assertions.assertEquals(3, bplusTree.getSampleDepth());
@@ -318,7 +329,59 @@ class BplusTreeTest {
     }
 
     @Test
-    void peekLast() {
+    void shouldCheckLastValueAndKey() throws BTreeException {
+        for (int i = MAXN - 1; i >= 0; --i) {
+            Assertions.assertEquals(Integer.valueOf(i), bplusTree.peekLastKey());
+            Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.peekLastValue());
+            bplusTree.removeFrom(i);
+        }
+
+        for (int i = 1; i < MAXN; i++) {
+            bplusTree.add(i, 2 * i);
+            Assertions.assertEquals(Integer.valueOf(i), bplusTree.peekLastKey());
+            Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.peekLastValue());
+        }
+        bplusTree.add(0, 0);
+
+        for (int i = MAXN - 1; i >= 0; --i) {
+            Assertions.assertEquals(Integer.valueOf(i), bplusTree.peekLastKey());
+            bplusTree.remove(i);
+        }
+    }
+
+    @Test
+    void shouldCheckLastValueAndKeyLeafRoot() throws BTreeException {
+        int MAX = 5;
+        bplusTree = new BplusTree<>(true);
+
+        for (int i = 1; i < MAX; i++) {
+            bplusTree.add(i, 2 * i);
+            Assertions.assertEquals(Integer.valueOf(i), bplusTree.peekLastKey());
+            Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.peekLastValue());
+        }
+
+        for (int i = MAX - 1; i > 0; --i) {
+            Assertions.assertEquals(Integer.valueOf(i), bplusTree.peekLastKey());
+            Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.peekLastValue());
+            bplusTree.removeFrom(i);
+        }
+
+        for (int i = 1; i < MAX; i++) {
+            bplusTree.add(i, 2 * i);
+            Assertions.assertEquals(Integer.valueOf(i), bplusTree.peekLastKey());
+            Assertions.assertEquals(Integer.valueOf(2 * i), bplusTree.peekLastValue());
+        }
+
+        for (int i = MAX - 1; i > 0; --i) {
+            Assertions.assertEquals(Integer.valueOf(i), bplusTree.peekLastKey());
+            bplusTree.remove(i);
+        }
+    }
+
+    @Test
+    void shouldIterateBackward() {
+        Assertions.assertNull(new BplusTree<Integer, Integer>().peekLast());
+
         BplusTreeLeafNode.BplusTreeIterator iterator = bplusTree.peekLast();
 
         for (int i = MAXN - 1; i > 0; i--) {
@@ -331,5 +394,44 @@ class BplusTreeTest {
         Assertions.assertEquals(0, iterator.getKey());
         Assertions.assertEquals(0, iterator.getValue());
         Assertions.assertFalse(iterator.hasNext());
+    }
+
+    @Test
+    void shouldCheckEquals() throws CloneNotSupportedException, BTreeException {
+        Assertions.assertNotEquals(bplusTree, new BplusTree<Integer, Integer>());
+        Assertions.assertEquals(bplusTree, bplusTree);
+        Assertions.assertEquals(new BplusTree<Integer, Integer>(), new BplusTree<Integer, Integer>());
+        Assertions.assertNotEquals(bplusTree, null);
+
+        BplusTree<Integer, Integer> secondaryTree = bplusTree.clone();
+        Assertions.assertEquals(bplusTree, secondaryTree);
+
+        secondaryTree.add(-1, -1);
+        Assertions.assertNull(bplusTree.find(-1));
+        Assertions.assertNotNull(secondaryTree.find(-1));
+        Assertions.assertNotEquals(bplusTree, secondaryTree);
+
+        secondaryTree.remove(-1);
+        Assertions.assertEquals(bplusTree, secondaryTree);
+
+        bplusTree.add(-1, -1);
+        secondaryTree.add(-1, -1);
+        Assertions.assertEquals(bplusTree, secondaryTree);
+
+        bplusTree.add(MAXN, 2 * MAXN);
+        Assertions.assertNotEquals(bplusTree, secondaryTree);
+        secondaryTree.add(MAXN, 3 * MAXN);
+        Assertions.assertNotEquals(bplusTree, secondaryTree);
+    }
+
+    @Test
+    void shouldClone() throws CloneNotSupportedException, BTreeException {
+        BplusTree<SimpleComparableCloneable, SimpleCloneable> bplusTree = new BplusTree<>();
+        Assertions.assertNotSame(bplusTree, bplusTree.clone());
+
+        BplusTree<SimpleComparableCloneable, SimpleCloneable> mutatedBplusTree = new BplusTree();
+        mutatedBplusTree.add(new SimpleComparableCloneable(), new SimpleCloneable());
+        Assertions.assertNotEquals(bplusTree, mutatedBplusTree);
+        Assertions.assertEquals(mutatedBplusTree, mutatedBplusTree.clone());
     }
 }
