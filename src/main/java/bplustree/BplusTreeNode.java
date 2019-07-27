@@ -3,7 +3,7 @@ package bplustree;
 import utility.CircularFifoQueue;
 
 public abstract class BplusTreeNode<Key extends Comparable, Value> {
-    protected static final int CAPACITY = 127;
+    protected static final int CAPACITY = 63;
     protected BplusTreeBranchNode parent;
     protected CircularFifoQueue<Key> keys;
     protected Key LeftRangeKey;

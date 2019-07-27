@@ -26,6 +26,7 @@ class BplusTreeTest {
         bplusTree.add(0, 0);
     }
 
+    @Disabled
     @org.junit.jupiter.api.Test
     void shouldBeInRange() throws NoSuchFieldException, IllegalAccessException, BTreeException {
         Field _root = BplusTree.class.getDeclaredField("_root");
@@ -319,6 +320,7 @@ class BplusTreeTest {
         }
     }
 
+    @Disabled
     @org.junit.jupiter.api.Test
     void shouldCheckSampleDepth() {
         Assertions.assertEquals(3, bplusTree.getSampleDepth());
