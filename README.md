@@ -4,4 +4,4 @@
 [![codecov](https://codecov.io/gh/mr-bat/BPlusTree/branch/master/graph/badge.svg)](https://codecov.io/gh/mr-bat/BPlusTree)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/18082c8908db4692bd702aa448734b33)](https://www.codacy.com/app/abateni/BPlusTree?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mr-bat/BPlusTree&amp;utm_campaign=Badge_Grade)
 
-Implementing BPlusTree with Java.
+Implementing **high performance** BPlusTree with Java.
